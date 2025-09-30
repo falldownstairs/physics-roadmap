@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { CheckCircle, Circle } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -9,21 +8,26 @@ interface NodeProps{
   x: number;
   y: number;
   completed: boolean;
+  onClick: (id: number) => void;
 }
 
-export default function Node({title,id,course,x,y,completed}:NodeProps){
+export default function Node({title,id,course,x,y,completed,onClick}:NodeProps){
   // ✅ PERFORMANCE FIX: Memoize color classes
   const nodeColorClass = useMemo(() => {
     if (completed) {
-      return 'bg-gradient-to-br from-teal-500 to-teal-700 hover:from-teal-400 hover:to-teal-600 shadow-lg shadow-teal-500/25'; 
+      return 'bg-green-600 hover:bg-green-500 shadow-lg shadow-green-600/25'; 
     } else {
-      return 'bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25';
+      return 'bg-[#404bd6] hover:bg-[#4061f8] shadow-lg shadow-blue-600/25';
     }
   }, [completed]);
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent drag behavior
+    onClick(id);
+  };
+
   return(
-    <Link
-      href={`/ap-physics-1/lesson/${id}`}
+    <div
       key={id}
       className={`absolute w-44 h-20 rounded-xl hover:scale-105 transition-all duration-300 cursor-pointer ${nodeColorClass} text-white backdrop-blur-sm border border-white/10`}
       style={{
@@ -31,6 +35,7 @@ export default function Node({title,id,course,x,y,completed}:NodeProps){
         top: y,
         zIndex: 2
       }}
+      onClick={handleClick}
     >
       <div className="flex items-center justify-between p-4 h-full">
         <div className="flex-1 min-w-0">
@@ -45,6 +50,6 @@ export default function Node({title,id,course,x,y,completed}:NodeProps){
           }
         </div>
       </div>
-    </Link>
+    </div>
   )
 }

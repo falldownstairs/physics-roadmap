@@ -1,0 +1,31 @@
+/* Custom MathQuill styling to match design system */
+
+.mathquill-input-wrapper {
+  position: relative;
+}
+
+.mathquill-input .mq-editable-field {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.mathquill-input .mq-editable-field.mq-focused {
+  outline: 2px solid #16a34a !important;
+  outline-offset: -2px;
+}
+
+.mathquill-input .mq-cursor {
+  border-color: #16a34a !important;
+}
+
+/* Ensure proper font rendering */
+.mathquill-input .mq-root-block {
+  font-size: 1.125rem;
+  padding: 0.25rem;
+}
+
+/* Match Tailwind's disabled state */
+.mathquill-input-wrapper.opacity-50 .mathquill-input {
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { AuthProvider } from "../context/AuthContext";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 import '../styles/mathquill-custom.css';
 import { MathJaxContext } from 'better-react-mathjax';
 

@@ -23,7 +23,7 @@ export default function ExplanationDisplay({ explanation, isCorrect }: Explanati
         </div>
         <div className="flex-1">
           <h4 className={`font-semibold mb-2 ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-            {isCorrect ? 'Correct!' : 'Not quite right'}
+            {isCorrect ? 'correct!' : 'not quite...'}
           </h4>
           <LatexRenderer 
             content={explanation}

@@ -29,25 +29,29 @@ export default function WordQuestion({ question, onSubmit, disabled }: WordQuest
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <textarea
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          disabled={disabled}
-          placeholder="Type your answer here..."
-          rows={4}
-          className="w-full p-4 border-2 border-slate-200 rounded-lg focus:border-green-600 focus:outline-none resize-none disabled:bg-slate-100 disabled:cursor-not-allowed"
-        />
+        <div className="w-full p-4 border-2 border-slate-200 rounded-lg focus-within:border-blue-600 bg-white">
+          <textarea
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            disabled={disabled}
+            placeholder="Type your answer here..."
+            rows={1}
+            className="w-full min-h-[48px] focus:outline-none resize-none disabled:cursor-not-allowed bg-transparent"
+          />
+        </div>
         <p className="text-sm text-slate-500">
           Write your answer in complete sentences.
         </p>
       </div>
-      <button
-        onClick={handleSubmit}
-        disabled={!userInput.trim() || disabled}
-        className="w-full bg-green-600 text-white py-3 px-6 rounded-full hover:bg-green-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
-      >
-        Submit Answer
-      </button>
+      {!disabled && (
+        <button
+          onClick={handleSubmit}
+          disabled={!userInput.trim()}
+          className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
+        >
+          Submit Answer
+        </button>
+      )}
     </div>
   );
 }

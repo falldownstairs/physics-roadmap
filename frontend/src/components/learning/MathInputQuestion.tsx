@@ -31,6 +31,7 @@ const mathFieldWrapperStyles = {
   minHeight: '48px',
   display: 'flex',
   alignItems: 'center',
+  position: 'relative' as const,
 };
 
 interface MathInputQuestionProps {
@@ -43,6 +44,8 @@ interface MathInputQuestionProps {
 export default function MathInputQuestion({ question, onSubmit, disabled, submittedAnswer }: MathInputQuestionProps) {
   const [latex, setLatex] = useState(submittedAnswer || '');
   const [isMounted, setIsMounted] = useState(false);
+  const [mathField, setMathField] = useState<any>(null);
+  const [isFocused, setIsFocused] = useState(false);
   
   // Reset when question changes
   useEffect(() => {
@@ -61,9 +64,13 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
         min-height: 30px;
         outline: none !important;
         border: none !important;
+        display: flex !important;
+        align-items: center !important;
       }
       .mq-root-block {
         width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
       }
       .mq-focused {
         outline: none !important;
@@ -71,10 +78,16 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
       }
       .mq-math-mode {
         font-size: 1.2em;
+        line-height: 1.5;
+      }
+      .static-math-container {
+        display: flex;
+        align-items: center;
+        min-height: 48px;
       }
       .static-math-container .mq-math-mode {
-        font-size: 1.3em;
-        padding: 0.5em 0;
+        font-size: 1.2em;
+        line-height: 1.5;
       }
     `;
     document.head.appendChild(style);
@@ -134,12 +147,25 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
   return (
     <div>
       <div className="space-y-2">
-        <div className={`w-full p-4 border-2 rounded-lg bg-white ${disabled ? 'border-slate-200 bg-slate-50' : 'border-slate-200 focus-within:border-green-600'}`}>
+        <div className={`w-full p-4 border-2 rounded-lg bg-white relative ${disabled ? 'border-slate-200' : 'border-slate-200 focus-within:border-blue-600'}`}>
+          {!disabled && !latex && !isFocused && (
+            <label 
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none select-none"
+              style={{ fontSize: '1.2em' }}
+            >
+              Type your answer here...
+            </label>
+          )}
           <div style={mathFieldWrapperStyles}>
             {!disabled ? (
               <EditableMathFieldComponent
                 latex={latex}
                 onChange={(mf: any) => setLatex(mf.latex())}
+                mathquillDidMount={(mf: any) => {
+                  setMathField(mf);
+                  mf.el().addEventListener('focus', () => setIsFocused(true));
+                  mf.el().addEventListener('blur', () => setIsFocused(false));
+                }}
                 style={mathFieldStyles}
                 config={{
                   spaceBehavesLikeTab: true,
@@ -161,7 +187,7 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
         </div>
         {!disabled && (
           <p className="text-sm text-slate-500">
-            Use shortcuts: delta, sqrt, /, ^, _ or type LaTeX commands
+            Use shortcuts: Delta, sqrt, /, ^, _ or type LaTeX commands
           </p>
         )}
       </div>
@@ -169,7 +195,7 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
         <button
           onClick={handleSubmit}
           disabled={!latex.trim()}
-          className="mt-6 w-full bg-green-600 text-white py-3 px-6 rounded-full hover:bg-green-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
+          className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
         >
           Submit Answer
         </button>

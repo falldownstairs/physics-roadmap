@@ -5,11 +5,13 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import SignInModal from "./SignInModal";
+import SignOutModal from "./SignOutModal";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
+  const { user, isAuthenticated} = useAuth();
 
   const links = [
     { href: "/", label: "Home", id: crypto.randomUUID()},
@@ -20,7 +22,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="relative top-0 left-0 right-0 z-30 bg-white border-b border-slate-200">
-        <div className="mx-auto flex justify-between items-center px-3 py-2">
+        <div className="mx-auto flex justify-between items-center px-7 py-2">
           <div className="flex gap-2">
             {links.map((link) => (
               <Link
@@ -40,19 +42,17 @@ export default function Navbar() {
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
               {user?.profilePicture && (
-                <img 
-                  src={user.profilePicture} 
-                  alt={user.displayName || "User"} 
-                  className="w-8 h-8 rounded-full object-cover"
-                />
+                <button 
+                  onClick={() => setIsSignOutModalOpen(true)}
+                  className="w-9 h-9 rounded-full overflow-hidden hover:ring-2 hover:ring-slate-300 transition-all duration-200"
+                >
+                  <img 
+                    src={user.profilePicture} 
+                    alt={user.displayName || "User"} 
+                    className="w-full h-full object-cover"
+                  />
+                </button>
               )}
-              <span className="text-sm font-medium">{user?.displayName}</span>
-              <button 
-                onClick={logout}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-700 rounded-full transition-all duration-200"
-              >
-                Sign Out
-              </button>
             </div>
           ) : (
             <button 
@@ -68,6 +68,11 @@ export default function Navbar() {
       <SignInModal 
         isOpen={isSignInModalOpen} 
         onClose={() => setIsSignInModalOpen(false)} 
+      />
+      
+      <SignOutModal 
+        isOpen={isSignOutModalOpen} 
+        onClose={() => setIsSignOutModalOpen(false)} 
       />
     </>
   );

@@ -17,7 +17,7 @@ export default function Node({title,id,course,x,y,completed,onClick}:NodeProps){
     if (completed) {
       return 'bg-green-600 hover:bg-green-500 shadow-lg shadow-green-600/25'; 
     } else {
-      return 'bg-[#404bd6] hover:bg-[#4061f8] shadow-lg shadow-blue-600/25';
+      return 'bg-[#3b5be7] hover:bg-[#5276ff] shadow-lg shadow-blue-600/25';
     }
   }, [completed]);
 
@@ -39,7 +39,7 @@ export default function Node({title,id,course,x,y,completed,onClick}:NodeProps){
     >
       <div className="flex items-center justify-between p-4 h-full">
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-sm leading-tight truncate">
+          <div className="font-bold text-lg leading-tight truncate">
             {title}
           </div>
         </div>

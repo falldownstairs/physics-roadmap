@@ -132,7 +132,7 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   }, []);
 
   return (
-    <div className="w-full h-full bg-[#bdcfe2] relative flex">
+    <div className="w-full h-full bg-[#c7d8ea] relative flex">
       {/* Roadmap Container - 4/5 width */}
       <div className="w-4/5 h-full relative z-0">
         <div

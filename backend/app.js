@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
 require('dotenv').config();
 require('./config/passport'); // Import passport configuration
 
@@ -13,6 +16,7 @@ const dataService = require('./services/dataService');
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const progressRoutes = require('./routes/progressRoutes');
 
 const app = express();
 const PORT = 3002;
@@ -28,17 +32,59 @@ async function connectToDatabase() {
   }
 }
 
-app.use(cors());
+// CORS must come BEFORE session
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true, // Important for cookies/sessions
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
-// Initialize passport
+// Session configuration - AFTER CORS
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    touchAfter: 24 * 3600 // lazy session update
+  }),
+  cookie: {
+    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
+    secure: false, // Set to false for localhost
+    httpOnly: true,
+    sameSite: 'lax' // Important for cross-origin cookies
+  }
+}));
+
+// Initialize passport with session support
 app.use(passport.initialize());
+app.use(passport.session());
+
+// Simplified logging middleware (only log on auth routes)
+app.use('/api/auth', (req, res, next) => {
+  console.log(`[AUTH] ${req.method} ${req.path}`);
+  console.log('[AUTH] SessionID:', req.sessionID);
+  console.log('[AUTH] Authenticated:', req.isAuthenticated());
+  next();
+});
+
+app.use('/api/progress', (req, res, next) => {
+  console.log(`[PROGRESS] ${req.method} ${req.path}`);
+  console.log('[PROGRESS] SessionID:', req.sessionID);
+  console.log('[PROGRESS] Authenticated:', req.isAuthenticated());
+  next();
+});
 
 // Initialize in-memory data
 dataService.initializeData();
 
 // Auth routes
 app.use('/api/auth', authRoutes);
+
+// Progress routes
+app.use('/api/progress', progressRoutes);
 
 app.get('/api/health', async (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;
@@ -113,6 +159,9 @@ app.listen(PORT, async () => {
   console.log('   - GET /api/auth/google');
   console.log('   - GET /api/auth/google/callback');
   console.log('   - GET /api/auth/user');
+  console.log('   Progress:'); // Add documentation for progress endpoints
+  console.log('   - GET /api/progress/:lessonId');
+  console.log('   - POST /api/progress/:lessonId');
   console.log('   Admin:');
   console.log('   - GET /api/users');
   console.log('');

@@ -80,22 +80,57 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
     return videoIdx === currentVideoIndex && questionIdx === currentQuestionIndex;
   };
 
+  // Generate progress segments
+  const getProgressSegments = () => {
+    const segments: Array<{ type: 'video' | 'question'; status: 'completed' | 'current' | 'locked'; videoIdx: number; questionIdx?: number }> = [];
+    
+    lesson.videos.forEach((video, videoIdx) => {
+      // Add video segment
+      const videoStatus = 
+        videoIdx < currentVideoIndex ? 'completed' :
+        videoIdx === currentVideoIndex ? 'current' : 'locked';
+      segments.push({ type: 'video', status: videoStatus, videoIdx });
+      
+      // Add question segments
+      video.questions.forEach((_, questionIdx) => {
+        let questionStatus: 'completed' | 'current' | 'locked';
+        
+        if (videoIdx < currentVideoIndex) {
+          questionStatus = 'completed';
+        } else if (videoIdx === currentVideoIndex) {
+          if (questionIdx < currentQuestionIndex) {
+            questionStatus = 'completed';
+          } else if (questionIdx === currentQuestionIndex) {
+            questionStatus = isQuestionCompleted(videoIdx, questionIdx) ? 'completed' : 'current';
+          } else {
+            questionStatus = 'locked';
+          }
+        } else {
+          questionStatus = 'locked';
+        }
+        
+        segments.push({ type: 'question', status: questionStatus, videoIdx, questionIdx });
+      });
+    });
+    
+    return segments;
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-5xl mx-auto p-6 space-y-8">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">{lesson.title}</h1>
         <p className="text-slate-600">Estimated time: {lesson.estimatedTime}</p>
-        <div className="mt-4 flex gap-2">
-          {lesson.videos.map((_, index) => (
+        <div className="mt-4 flex gap-1 items-center">
+          {getProgressSegments().map((segment, index) => (
             <div
               key={index}
-              className={`h-2 flex-1 rounded-full ${
-                index < currentVideoIndex
-                  ? 'bg-blue-600'
-                  : index === currentVideoIndex
-                  ? 'bg-blue-400'
+              className={`h-2 min-w-[6px] flex-1 rounded-full transition-all duration-300 ${
+                segment.status === 'completed'
+                  ? 'bg-blue-500'
                   : 'bg-slate-200'
               }`}
+              title={segment.type === 'video' ? `Video ${segment.videoIdx + 1}` : `Question ${(segment.questionIdx ?? 0) + 1}`}
             />
           ))}
         </div>
@@ -154,5 +189,3 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
     </div>
   );
 }
-
-

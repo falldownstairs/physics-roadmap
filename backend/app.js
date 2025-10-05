@@ -27,7 +27,7 @@ async function connectToDatabase() {
     console.log('📚 Connected to MongoDB for user authentication');
     return true;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
+    console.warn('⚠️  MongoDB connection failed - Running without authentication:', error.message);
     return false;
   }
 }

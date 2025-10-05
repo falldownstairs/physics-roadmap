@@ -1,5 +1,7 @@
-module.exports = [{
+module.exports = {
   id: "102",
+  courseId: "mechanics",
+  topicId: "kinematics",
   title: "Kinematic Equations & Calculus",
   estimatedTime: "20 minutes",
   videos: [
@@ -67,4 +69,4 @@ module.exports = [{
       ]
     }
   ]
-}];
+};

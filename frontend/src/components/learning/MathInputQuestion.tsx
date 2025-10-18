@@ -39,9 +39,11 @@ interface MathInputQuestionProps {
   onSubmit: (answer: string, isCorrect: boolean) => void;
   disabled: boolean;
   submittedAnswer?: string;
+  isCorrect?: boolean;
+  isCompleted: boolean;
 }
 
-export default function MathInputQuestion({ question, onSubmit, disabled, submittedAnswer }: MathInputQuestionProps) {
+export default function MathInputQuestion({ question, onSubmit, disabled, submittedAnswer, isCorrect, isCompleted }: MathInputQuestionProps) {
   const [latex, setLatex] = useState(submittedAnswer || '');
   const [isMounted, setIsMounted] = useState(false);
   const [mathField, setMathField] = useState<any>(null);
@@ -147,8 +149,8 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
   return (
     <div>
       <div className="space-y-2">
-        <div className={`w-full p-4 border-2 rounded-lg bg-white relative ${disabled ? 'border-slate-200' : 'border-slate-200 focus-within:border-blue-600'}`}>
-          {!disabled && !latex && !isFocused && (
+        <div className="relative w-full p-4 border-2 rounded-lg bg-white border-slate-200 focus-within:border-blue-600">
+          {!latex && !isFocused && (
             <label 
               className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none select-none"
               style={{ fontSize: '1.2em' }}
@@ -157,49 +159,58 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
             </label>
           )}
           <div style={mathFieldWrapperStyles}>
-            {!disabled ? (
-              <EditableMathFieldComponent
-                latex={latex}
-                onChange={(mf: any) => setLatex(mf.latex())}
-                mathquillDidMount={(mf: any) => {
-                  setMathField(mf);
-                  mf.el().addEventListener('focus', () => setIsFocused(true));
-                  mf.el().addEventListener('blur', () => setIsFocused(false));
-                }}
-                style={mathFieldStyles}
-                config={{
-                  spaceBehavesLikeTab: true,
-                  leftRightIntoCmdGoes: 'up',
-                  restrictMismatchedBrackets: true,
-                  supSubsRequireOperand: true,
-                  autoCommands: 'pi theta sqrt sum prod alpha beta gamma Delta omega infinity',
-                  autoOperatorNames: 'sin cos tan ln log',
-                }}
-              />
-            ) : (
-              <div className="static-math-container w-full">
-                <StaticMathFieldComponent style={mathFieldStyles}>
-                  {latex}
-                </StaticMathFieldComponent>
-              </div>
-            )}
+            <EditableMathFieldComponent
+              latex={latex}
+              onChange={(mf: any) => setLatex(mf.latex())}
+              mathquillDidMount={(mf: any) => {
+                setMathField(mf);
+                mf.el().addEventListener('focus', () => setIsFocused(true));
+                mf.el().addEventListener('blur', () => setIsFocused(false));
+              }}
+              style={mathFieldStyles}
+              config={{
+                spaceBehavesLikeTab: true,
+                leftRightIntoCmdGoes: 'up',
+                restrictMismatchedBrackets: true,
+                supSubsRequireOperand: true,
+                autoCommands: 'pi theta sqrt sum prod alpha beta gamma Delta omega infinity',
+                autoOperatorNames: 'sin cos tan ln log',
+              }}
+            />
           </div>
+          {isCompleted && (
+            <div className={`absolute bottom-2 right-2 flex items-center text-sm font-medium ${
+              isCorrect ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {isCorrect ? (
+                <>
+                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Correct
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  Incorrect
+                </>
+              )}
+            </div>
+          )}
         </div>
-        {!disabled && (
-          <p className="text-sm text-slate-500">
-            Use shortcuts: Delta, sqrt, /, ^, _ or type LaTeX commands
-          </p>
-        )}
+        <p className="text-sm text-slate-500">
+          Use shortcuts: Delta, sqrt, /, ^, _ or type LaTeX commands
+        </p>
       </div>
-      {!disabled && (
-        <button
-          onClick={handleSubmit}
-          disabled={!latex.trim()}
-          className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
-        >
-          Submit Answer
-        </button>
-      )}
+      <button
+        onClick={handleSubmit}
+        disabled={!latex.trim()}
+        className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer"
+      >
+        Submit Answer
+      </button>
     </div>
   );
 }

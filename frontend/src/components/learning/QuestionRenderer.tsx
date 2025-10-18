@@ -8,10 +8,12 @@ interface QuestionRendererProps {
   question: Question;
   onSubmit: (answer: string | number, isCorrect: boolean) => void;
   disabled: boolean;
-  submittedAnswer?: string | number; 
+  submittedAnswer?: string | number;
+  isCorrect?: boolean;
+  isCompleted: boolean;
 }
 
-export default function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer }: QuestionRendererProps) {
+export default function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCorrect, isCompleted }: QuestionRendererProps) {
   // Render question text with LaTeX support
   const QuestionText = () => (
     <div className="mb-4">
@@ -31,7 +33,9 @@ export default function QuestionRenderer({ question, onSubmit, disabled, submitt
             question={question} 
             onSubmit={onSubmit} 
             disabled={disabled} 
-            submittedAnswer={submittedAnswer as number} 
+            submittedAnswer={submittedAnswer as number}
+            isCorrect={isCorrect}
+            isCompleted={isCompleted}
           />
         </>
       );
@@ -43,7 +47,9 @@ export default function QuestionRenderer({ question, onSubmit, disabled, submitt
             question={question} 
             onSubmit={onSubmit} 
             disabled={disabled} 
-            submittedAnswer={submittedAnswer as string} 
+            submittedAnswer={submittedAnswer as string}
+            isCorrect={isCorrect}
+            isCompleted={isCompleted}
           />
         </>
       );
@@ -55,7 +61,9 @@ export default function QuestionRenderer({ question, onSubmit, disabled, submitt
             question={question} 
             onSubmit={onSubmit} 
             disabled={disabled} 
-            submittedAnswer={submittedAnswer as string} 
+            submittedAnswer={submittedAnswer as string}
+            isCorrect={isCorrect}
+            isCompleted={isCompleted}
           />
         </>
       );

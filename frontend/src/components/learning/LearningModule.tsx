@@ -17,13 +17,12 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-  const [completedVideos, setCompletedVideos] = useState<number[]>([0]);
   const currentQuestionRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const { isAuthenticated: isUserAuthenticated, loading: authLoading } = useAuth();
   const hasLoadedProgress = useRef(false);
-
+  
   // Load progress only from API for authenticated users
   useEffect(() => {
     async function loadProgress() {
@@ -42,26 +41,6 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
           setCurrentVideoIndex(apiProgress.videoIndex);
           setCurrentQuestionIndex(apiProgress.questionIndex);
           setUserAnswers(apiProgress.userAnswers);
-          
-          // Calculate which videos are completed based on progress
-          const completed = new Set<number>([0]);
-          
-          for (let i = 0; i < apiProgress.videoIndex; i++) {
-            completed.add(i);
-          }
-          
-          const videosWithCompletedQuestions = apiProgress.userAnswers.map(a => a.videoIndex);
-          videosWithCompletedQuestions.forEach(videoIdx => {
-            const video = lesson.videos[videoIdx];
-            if (video) {
-              const answeredQuestionsCount = apiProgress.userAnswers.filter(a => a.videoIndex === videoIdx).length;
-              if (answeredQuestionsCount === video.questions.length && videoIdx + 1 < lesson.videos.length) {
-                completed.add(videoIdx + 1);
-              }
-            }
-          });
-          
-          setCompletedVideos(Array.from(completed));
         } else {
           console.log('No existing progress found');
         }
@@ -104,43 +83,37 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
       });
   }, [currentVideoIndex, currentQuestionIndex, userAnswers, lesson.id, isUserAuthenticated, authLoading]);
 
-  const handleAnswerSubmit = (answer: string | number, isCorrect: boolean) => {
+  const handleAnswerSubmit = (videoIdx: number, questionIdx: number, answer: string | number, isCorrect: boolean) => {
     const userAnswer: UserAnswer = {
-      videoIndex: currentVideoIndex,
-      questionIndex: currentQuestionIndex,
+      videoIndex: videoIdx,
+      questionIndex: questionIdx,
       answer,
       isCorrect
     };
     
     // Remove any previous answer for this question to avoid duplicates
     const filteredAnswers = userAnswers.filter(
-      ans => !(ans.videoIndex === currentVideoIndex && ans.questionIndex === currentQuestionIndex)
+      ans => !(ans.videoIndex === videoIdx && ans.questionIndex === questionIdx)
     );
     
     const newUserAnswers = [...filteredAnswers, userAnswer];
-    
-    // Automatically advance to next question
-    const currentVideo = lesson.videos[currentVideoIndex];
-    
-    // Check if this was the last question of the video
-    const isLastQuestion = currentQuestionIndex === currentVideo.questions.length - 1;
-    
-    // Update all state together
     setUserAnswers(newUserAnswers);
     
-    // If this was the last question and there are more videos, mark the next video as completed
-    if (isLastQuestion && currentVideoIndex + 1 < lesson.videos.length) {
-      setCompletedVideos(prev => [...prev, currentVideoIndex + 1]);
-    }
+    // Check if this unlocks a new question (user answered the furthest unlocked question)
+    const isAnsweringFurthestQuestion = 
+      videoIdx === currentVideoIndex && questionIdx === currentQuestionIndex;
     
-    if (currentQuestionIndex < currentVideo.questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else if (currentVideoIndex < lesson.videos.length - 1) {
-      setCurrentVideoIndex(prev => prev + 1);
-      setCurrentQuestionIndex(0);
-    } else {
-      // Module complete
-      alert('Congratulations! You have completed this lesson.');
+    if (isAnsweringFurthestQuestion) {
+      const currentVideo = lesson.videos[videoIdx];
+      
+      if (questionIdx < currentVideo.questions.length - 1) {
+        // Unlock next question in current video
+        setCurrentQuestionIndex(prev => prev + 1);
+      } else if (videoIdx < lesson.videos.length - 1) {
+        // Unlock first question of next video
+        setCurrentVideoIndex(prev => prev + 1);
+        setCurrentQuestionIndex(0);
+      }
     }
   };
 
@@ -150,40 +123,22 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
     );
   };
 
-  const isQuestionCompleted = (videoIdx: number, questionIdx: number) => {
+  const isQuestionAnswered = (videoIdx: number, questionIdx: number) => {
     return getUserAnswer(videoIdx, questionIdx) !== undefined;
-  };
-
-  const isCurrentQuestion = (videoIdx: number, questionIdx: number) => {
-    return videoIdx === currentVideoIndex && questionIdx === currentQuestionIndex;
-  };
-
-  const isVideoCompleted = (videoIdx: number) => {
-    return completedVideos.includes(videoIdx);
   };
 
   // Generate progress segments
   const getProgressSegments = () => {
-    const segments: Array<{ type: 'video' | 'question'; status: 'completed' | 'current' | 'locked'; videoIdx: number; questionIdx?: number }> = [];
+    const segments: Array<{ type: 'video' | 'question'; status: 'completed' | 'unanswered'; videoIdx: number; questionIdx?: number }> = [];
     
     lesson.videos.forEach((video, videoIdx) => {
-      // Add video segment
-      const videoStatus = 
-        isVideoCompleted(videoIdx) ? 'completed' :
-        videoIdx === currentVideoIndex ? 'current' : 'locked';
+      // Video is completed if it's been rendered (user has progressed to or past it)
+      const videoStatus = videoIdx <= currentVideoIndex ? 'completed' : 'unanswered';
       segments.push({ type: 'video', status: videoStatus, videoIdx });
       
       // Add question segments
       video.questions.forEach((_, questionIdx) => {
-        let questionStatus: 'completed' | 'current' | 'locked';
-        
-        if (isQuestionCompleted(videoIdx, questionIdx)) {
-          questionStatus = 'completed';
-        } else if (isCurrentQuestion(videoIdx, questionIdx)) {
-          questionStatus = 'current';
-        } else {
-          questionStatus = 'locked';
-        }
+        const questionStatus = isQuestionAnswered(videoIdx, questionIdx) ? 'completed' : 'unanswered';
         
         segments.push({ 
           type: 'question', 
@@ -239,11 +194,7 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
               <div
                 key={index}
                 className={`h-2 min-w-[6px] flex-1 rounded-full transition-all duration-300 ${
-                  segment.status === 'completed'
-                    ? 'bg-blue-500'
-                    : segment.status === 'current'
-                    ? 'bg-blue-300 animate-pulse'
-                    : 'bg-slate-200'
+                  segment.status === 'completed' ? 'bg-blue-500' : 'bg-slate-200'
                 }`}
                 title={segment.type === 'video' ? `Video ${segment.videoIdx + 1}` : `Question ${(segment.questionIdx ?? 0) + 1}`}
               />
@@ -277,31 +228,27 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
                   
                   if (!shouldShowQuestion) return null;
 
-                  const isCurrent = isCurrentQuestion(videoIdx, questionIdx);
-                  const isCompleted = isQuestionCompleted(videoIdx, questionIdx);
                   const userAnswer = getUserAnswer(videoIdx, questionIdx);
 
                   return (
                     <div
                       key={questionIdx}
-                      ref={isCurrent ? currentQuestionRef : null}
-                      className={`bg-white rounded-lg shadow-md p-6 ${
-                        isCompleted && !isCurrent ? 'opacity-75' : ''
-                      }`}
+                      className="bg-white rounded-lg shadow-md p-6"
                     >
                       <QuestionRenderer
                         question={question}
-                        onSubmit={handleAnswerSubmit}
-                        disabled={!isCurrent || isCompleted}
+                        onSubmit={(answer, isCorrect) => handleAnswerSubmit(videoIdx, questionIdx, answer, isCorrect)}
+                        disabled={false}
                         submittedAnswer={userAnswer?.answer}
+                        isCorrect={userAnswer?.isCorrect}
+                        isCompleted={!!userAnswer}
                       />
 
-                      {isCompleted && (
-                        <ExplanationDisplay
-                          explanation={question.explanation}
-                          isCorrect={userAnswer!.isCorrect}
-                        />
-                      )}
+                      <ExplanationDisplay
+                        explanation={question.explanation}
+                        isCorrect={userAnswer?.isCorrect}
+                        isCompleted={!!userAnswer}
+                      />
                     </div>
                   );
                 })}

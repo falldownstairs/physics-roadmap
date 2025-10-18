@@ -28,7 +28,7 @@ export default function NodeSidebar({ selectedNode, courseName }: NodeSidebarPro
   }
 
   return (
-    <div className="w-full h-screen bg-white border-6 border-blue-100 p-6 box-border">
+    <div className="w-full h-screen bg-white border-6 border-blue-100 pr-2 pl-5 pt-5 pb-5 box-border">
       {/* Scrollable content area that includes everything */}
       <div className="h-full overflow-y-auto pr-4 scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400">
         {/* Title */}

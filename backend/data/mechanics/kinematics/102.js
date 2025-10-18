@@ -26,7 +26,7 @@ module.exports = {
           question: "Which of the following quantities is a vector?",
           options: ["Speed", "Distance", "Displacement", "Time"],
           correctAnswer: 2,
-          explanation: "**Displacement** is a vector because it has both magnitude and direction. Unlike distance (scalar), displacement includes the direction of motion from start to finish."
+          explanation: "$\\text{Displacement}$ is a vector because it has both magnitude and direction. Unlike distance (scalar), displacement includes the direction of motion from start to finish."
         }
       ]
     },

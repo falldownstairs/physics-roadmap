@@ -2,13 +2,13 @@
 import React, { useState, useRef, useEffect, useCallback, startTransition, useMemo } from 'react';
 import Node from "./Node";
 import NodeSidebar from "./NodeSidebar";
+import { ProgressProvider } from "../../contexts/ProgressContext";
 
 interface NodeData {
   id: number;
   title: string;
   description: string;
   videos: { number: string; title: string }[];
-  completed: boolean;
   x: number;
   y: number;
 }
@@ -211,113 +211,114 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   }, []);
 
   return (
-    <div ref={parentRef} className="w-full h-full bg-[#c7d8ea] relative flex">
-      {/* Roadmap Container - dynamic width */}
-      <div 
-        className="h-full relative z-0"
-        style={{ width: `${100 - sidebarWidth}%` }}
-      >
-        <div
-          ref={containerRef}
-          className={`w-full h-full ${isResizing ? 'pointer-events-none' : 'cursor-move'}`}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+    <ProgressProvider courseName={courseName}>
+      <div ref={parentRef} className="w-full h-full bg-[#c7d8ea] relative flex">
+        {/* Roadmap Container - dynamic width */}
+        <div 
+          className="h-full relative z-0"
+          style={{ width: `${100 - sidebarWidth}%` }}
         >
           <div
-            className={`relative transition-opacity duration-700 ${
-              isFadedIn ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{
-              transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-              transformOrigin: '0 0',
-              width: `${maxX}px`,
-              height: `${maxY}px`,
-              willChange: 'transform'
-            }}
+            ref={containerRef}
+            className={`w-full h-full ${isResizing ? 'pointer-events-none' : 'cursor-move'}`}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
           >
-            {/* Connection Arrows */}
-            <svg 
-              className="absolute inset-0 pointer-events-none" 
-              style={{ 
-                zIndex: 1,
+            <div
+              className={`relative transition-opacity duration-700 ${
+                isFadedIn ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{
+                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                transformOrigin: '0 0',
                 width: `${maxX}px`,
-                height: `${maxY}px`
+                height: `${maxY}px`,
+                willChange: 'transform'
               }}
-              viewBox={`0 0 ${maxX} ${maxY}`}
-              preserveAspectRatio="xMidYMid meet"
             >
-              <defs>
-              <marker
-                id="arrowhead"
-                markerWidth="12"
-                markerHeight="12"
-                refX="0"
-                refY="2"
-                orient="auto"
-                markerUnits="strokeWidth"
+              {/* Connection Arrows */}
+              <svg 
+                className="absolute inset-0 pointer-events-none" 
+                style={{ 
+                  zIndex: 1,
+                  width: `${maxX}px`,
+                  height: `${maxY}px`
+                }}
+                viewBox={`0 0 ${maxX} ${maxY}`}
+                preserveAspectRatio="xMidYMid meet"
               >
-                <polygon
-                  points="0 0, 3 2, 0 4"
-                  fill="white"
-                />
-              </marker>
-              </defs>
-              
-              {connections.map((connection, index) => {
-                const pathData = createCurvedPath(connection.from, connection.to, connection.offset);
-                return pathData ? (
-                  <path
-                    key={index}
-                    d={pathData}
-                    stroke="white"
-                    strokeWidth="5"
-                    fill="none"
-                    opacity={1}
-                    markerEnd="url(#arrowhead)"
-                    className="drop-shadow-sm"
+                <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="12"
+                  markerHeight="12"
+                  refX="0"
+                  refY="2"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <polygon
+                    points="0 0, 3 2, 0 4"
+                    fill="white"
                   />
-                ) : null;
-              })}
-            </svg>
-            {/* Course Nodes */}
-            {courseData.map((node) => {
-              return (
-              <Node 
-                key={node.id} 
-                id={node.id} 
-                title={node.title} 
-                x={node.x} 
-                y={node.y} 
-                completed={node.completed} 
-                course={courseName}
-                onClick={handleNodeClick}
-              />
-            )})}
+                </marker>
+                </defs>
+                
+                {connections.map((connection, index) => {
+                  const pathData = createCurvedPath(connection.from, connection.to, connection.offset);
+                  return pathData ? (
+                    <path
+                      key={index}
+                      d={pathData}
+                      stroke="white"
+                      strokeWidth="5"
+                      fill="none"
+                      opacity={1}
+                      markerEnd="url(#arrowhead)"
+                      className="drop-shadow-sm"
+                    />
+                  ) : null;
+                })}
+              </svg>
+              {/* Course Nodes */}
+              {courseData.map((node) => {
+                return (
+                <Node 
+                  key={node.id} 
+                  id={node.id} 
+                  title={node.title} 
+                  x={node.x} 
+                  y={node.y} 
+                  course={courseName}
+                  onClick={handleNodeClick}
+                />
+              )})}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Invisible Resize Handle */}
-      <div
-        className="w-2 cursor-col-resize relative z-20 flex-shrink-0"
-        onMouseDown={handleResizeStart}
-        style={{ 
-          touchAction: 'none',
-          backgroundColor: 'transparent'
-        }}
-      >
-        <div className="absolute inset-y-0 -left-2 -right-2" />
-      </div>
+        {/* Invisible Resize Handle */}
+        <div
+          className="w-2 cursor-col-resize relative z-20 flex-shrink-0"
+          onMouseDown={handleResizeStart}
+          style={{ 
+            touchAction: 'none',
+            backgroundColor: 'transparent'
+          }}
+        >
+          <div className="absolute inset-y-0 -left-2 -right-2" />
+        </div>
 
-      {/* Sidebar - dynamic width */}
-      <div 
-        className="relative z-10 flex-shrink-0"
-        style={{ width: `calc(${sidebarWidth}% - 8px)` }}
-      >
-        <NodeSidebar selectedNode={selectedNode} courseName={courseName} />
+        {/* Sidebar - dynamic width */}
+        <div 
+          className="relative z-10 flex-shrink-0"
+          style={{ width: `calc(${sidebarWidth}% - 8px)` }}
+        >
+          <NodeSidebar selectedNode={selectedNode} courseName={courseName} />
+        </div>
       </div>
-    </div>
+    </ProgressProvider>
   );
 };

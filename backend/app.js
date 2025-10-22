@@ -17,6 +17,7 @@ const dataService = require('./services/dataService');
 // Import routes
 const authRoutes = require('./routes/auth');
 const progressRoutes = require('./routes/progressRoutes');
+const validationRoutes = require('./routes/validation');
 
 const app = express();
 const PORT = 3002;
@@ -86,6 +87,9 @@ app.use('/api/auth', authRoutes);
 // Progress routes
 app.use('/api/progress', progressRoutes);
 
+// Validation routes
+app.use('/api/validation', validationRoutes);
+
 app.get('/api/health', async (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;
   res.json({
@@ -146,6 +150,9 @@ app.get('/api/:courseName/:lessonId', async (req, res) => {
   }
 });
 
+// Add this to appropriate route file
+
+
 app.listen(PORT, async () => {
   await connectToDatabase();
   console.log(`🚀 Server running on http://localhost:${PORT}`);
@@ -159,9 +166,12 @@ app.listen(PORT, async () => {
   console.log('   - GET /api/auth/google');
   console.log('   - GET /api/auth/google/callback');
   console.log('   - GET /api/auth/user');
-  console.log('   Progress:'); // Add documentation for progress endpoints
+  console.log('   Progress:');
   console.log('   - GET /api/progress/:lessonId');
   console.log('   - POST /api/progress/:lessonId');
+  console.log('   - GET /api/course/:courseName/problems');
+  console.log('   Validation:');
+  console.log('   - POST /api/validation/validate-answer');
   console.log('   Admin:');
   console.log('   - GET /api/users');
   console.log('');

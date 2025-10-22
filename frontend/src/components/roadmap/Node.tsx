@@ -1,5 +1,6 @@
 import { CheckCircle, Circle } from 'lucide-react';
 import { useMemo } from 'react';
+import { useProgress } from "../../contexts/ProgressContext";
 
 interface NodeProps{
   title: string;
@@ -7,24 +8,49 @@ interface NodeProps{
   course: string;
   x: number;
   y: number;
-  completed: boolean;
   onClick: (id: number) => void;
 }
 
-export default function Node({title,id,course,x,y,completed,onClick}:NodeProps){
+export default function Node({title,id,x,y,onClick}:NodeProps){
+  const { progressData, totalProblems, isLoading } = useProgress();
+  
+  // Calculate progress percentage
+  const progressPercentage = useMemo(() => {
+    if (isLoading) return 0;
+    
+    const lessonId = id.toString();
+    const lessonProgress = progressData[lessonId];
+    const total = totalProblems[lessonId] || 0;
+    
+    if (!lessonProgress || total === 0) return 0;
+    
+    return Math.min(100, (lessonProgress.userAnswers.length / total) * 100);
+  }, [id, progressData, totalProblems, isLoading]);
+
+  // Determine completion based on progress
+  const completed = progressPercentage === 100;
+  
   // ✅ PERFORMANCE FIX: Memoize color classes
   const nodeColorClass = useMemo(() => {
     if (completed) {
-      return 'bg-green-600 hover:bg-green-500 shadow-lg shadow-green-600/25'; 
+      return 'bg-violet-700 hover:bg-violet-600 shadow-lg shadow-violet-700/25'; 
     } else {
       return 'bg-[#3b5be7] hover:bg-[#5276ff] shadow-lg shadow-blue-600/25';
     }
   }, [completed]);
+  
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent drag behavior
     onClick(id);
   };
+
+  console.log(`Node ${id} progress:`, {
+  lessonId: id.toString(),
+  progress: progressData[id.toString()]?.userAnswers?.length || 0,
+  total: totalProblems[id.toString()] || 0,
+  percentage: progressPercentage
+  });
 
   return(
     <div
@@ -37,9 +63,9 @@ export default function Node({title,id,course,x,y,completed,onClick}:NodeProps){
       }}
       onClick={handleClick}
     >
-      <div className="flex items-center justify-between p-4 h-full">
+      <div className="flex items-center justify-between px-4 pt-2 pb-4.5 h-full">
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-lg leading-tight truncate">
+          <div className="font-bold text-base leading-tight truncate">
             {title}
           </div>
         </div>
@@ -49,6 +75,16 @@ export default function Node({title,id,course,x,y,completed,onClick}:NodeProps){
             : <Circle className="w-5 h-5 text-white" />
           }
         </div>
+      </div>
+      {/* Add progress bar at the bottom of the node */}
+      <div className="absolute bottom-3 left-2 right-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"
+          style={{ 
+            width: `${progressPercentage}%`,
+            opacity: isLoading ? 0.5 : 1
+          }}
+        />
       </div>
     </div>
   )

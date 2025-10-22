@@ -65,3 +65,72 @@ export async function saveProgress(lessonId: string, progress: ModuleProgress): 
     throw error;
   }
 }
+
+export async function fetchCourseProgress(courseName: string): Promise<Record<string, ModuleProgress>> {
+  try {
+    console.log('Fetching all progress for course:', courseName);
+    const response = await fetch(`${API_URL}/api/progress/course/${courseName}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 401) {
+      console.log('User not authenticated - 401');
+      return {};
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Course progress fetched:', data);
+    
+    // Convert the array to an object keyed by lessonId for easier access
+    const progressMap: Record<string, ModuleProgress> = {};
+    data.progress.forEach((item: any) => {
+      progressMap[item.lessonId] = {
+        videoIndex: item.videoIndex,
+        questionIndex: item.questionIndex,
+        userAnswers: item.userAnswers || []
+      };
+    });
+    
+    return progressMap;
+  } catch (error) {
+    console.error('Error fetching course progress:', error);
+    return {};
+  }
+}
+
+export async function fetchTotalProblems(courseName: string): Promise<Record<string, number>> {
+  try {
+    console.log('Fetching total problems for course:', courseName);
+    const response = await fetch(`${API_URL}/api/progress/course/${courseName}/problems`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Total problems fetched:', data);
+    
+    // Convert to a map for easier access
+    const problemsMap: Record<string, number> = {};
+    data.forEach((item: any) => {
+      problemsMap[item.lessonId] = item.totalProblems;
+    });
+    
+    return problemsMap;
+  } catch (error) {
+    console.error('Error fetching total problems:', error);
+    return {};
+  }
+}

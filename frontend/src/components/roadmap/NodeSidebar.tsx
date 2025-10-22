@@ -10,7 +10,6 @@ interface NodeData {
   title: string;
   description: string;
   videos: Video[];
-  completed: boolean;
 }
 
 interface NodeSidebarProps {

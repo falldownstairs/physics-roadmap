@@ -14,18 +14,62 @@ interface WordQuestionProps {
 
 export default function WordQuestion({ question, onSubmit, disabled, submittedAnswer, isCorrect, isCompleted }: WordQuestionProps) {
   const [userInput, setUserInput] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
+  const [explanation, setExplanation] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [rateLimit, setRateLimit] = useState<{ remaining: number; limit: number } | null>(null);
 
-  // Placeholder validation - always returns true and shows model answer
-  // TODO: Replace with Gemini API integration
-  const validateWordAnswer = (userAnswer: string): boolean => {
-    // Temporary: Show as correct and display the model answer in explanation
-    return true;
+  const validateWordAnswer = async (userAnswer: string): Promise<boolean> => {
+    setIsValidating(true);
+    setError('');
+    setExplanation('');
+
+    try {
+      const response = await fetch('http://localhost:3002/api/validation/validate-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          questionText: question.question,
+          modelAnswer: question.answer,
+          userAnswer: userAnswer
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError(data.error || 'Daily validation limit reached. Please try again tomorrow.');
+        } else if (response.status === 401) {
+          setError('Please log in to validate your answer.');
+        } else {
+          setError(data.error || 'Failed to validate answer. Please try again.');
+        }
+        return false;
+      }
+
+      setExplanation(data.explanation);
+      setRateLimit(data.rateLimit);
+      
+      return data.isCorrect;
+    } catch (err) {
+      console.error('Validation error:', err);
+      setError('Network error. Please check your connection and try again.');
+      return false;
+    } finally {
+      setIsValidating(false);
+    }
   };
 
-  const handleSubmit = () => {
-    if (!userInput.trim()) return;
-    const isCorrect = validateWordAnswer(userInput);
-    onSubmit(userInput, isCorrect);
+  const handleSubmit = async () => {
+    if (!userInput.trim() || isValidating) return;
+    const isCorrect = await validateWordAnswer(userInput);
+    if (!error) {
+      onSubmit(userInput, isCorrect);
+    }
   };
 
   return (
@@ -37,7 +81,8 @@ export default function WordQuestion({ question, onSubmit, disabled, submittedAn
             onChange={(e) => setUserInput(e.target.value)}
             placeholder="Type your answer here..."
             rows={1}
-            className="w-full min-h-[48px] focus:outline-none resize-none bg-transparent"
+            disabled={isValidating}
+            className="w-full min-h-[48px] focus:outline-none resize-none bg-transparent disabled:opacity-50"
           />
           {isCompleted && (
             <div className={`absolute bottom-2 right-2 flex items-center text-sm font-medium ${
@@ -64,13 +109,37 @@ export default function WordQuestion({ question, onSubmit, disabled, submittedAn
         <p className="text-sm text-slate-500">
           Write your answer in complete sentences.
         </p>
+        {rateLimit && (
+          <p className="text-xs text-slate-400">
+            Validations remaining today: {rateLimit.remaining}/{rateLimit.limit}
+          </p>
+        )}
       </div>
+
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
+      {explanation && (
+        <div className={`p-4 rounded-lg border ${
+          isCorrect ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'
+        }`}>
+          <p className={`text-sm ${
+            isCorrect ? 'text-green-700' : 'text-orange-700'
+          }`}>
+            {explanation}
+          </p>
+        </div>
+      )}
+
       <button
         onClick={handleSubmit}
-        disabled={!userInput.trim()}
+        disabled={!userInput.trim() || isValidating}
         className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer"
       >
-        Submit Answer
+        {isValidating ? 'Validating...' : 'Submit Answer'}
       </button>
     </div>
   );

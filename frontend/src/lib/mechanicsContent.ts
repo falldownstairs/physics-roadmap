@@ -11,7 +11,6 @@ export const courseData = [
         title: "Mechanics", 
         x: 1800, 
         y: l1, 
-        completed: false,
         videos: [
             { number: "H1", title: "The Big Picture (part 1): The Big Picture" },
             { number: "H2", title: "The Big Picture (part 2)" }
@@ -25,7 +24,6 @@ export const courseData = [
         title: "Kinematics", 
         x: 400, 
         y: l2, 
-        completed: false,
         videos: [],
         description: "The study of describing motion without considering the forces that cause it."
     },
@@ -34,7 +32,6 @@ export const courseData = [
         title: "Newton's Laws", 
         x: 800, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "B9", title: "Review of Unit B. Newton's Laws (part 1)" },
             { number: "B10", title: "Review of Unit B (part 2)" },
@@ -47,7 +44,6 @@ export const courseData = [
         title: "Work, Energy, Power", 
         x: 1200, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "C10", title: "Unit C Review (part 1)" },
             { number: "C11", title: "Unit C Review (part 2)" },
@@ -61,7 +57,6 @@ export const courseData = [
         title: "Momentum & Impulse", 
         x: 1600, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "D6", title: "Unit D Review (part 1)" },
             { number: "D7", title: "Unit D Review (part 2)" },
@@ -74,7 +69,6 @@ export const courseData = [
         title: "Rotational Motion", 
         x: 2000, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "E18", title: "Unit E Review (part 1)" },
             { number: "E19", title: "Unit E Review (part 2)" }
@@ -86,7 +80,6 @@ export const courseData = [
         title: "Satellite Motion", 
         x: 2400, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "F11", title: "Review for Unit F (part 1)" },
             { number: "F12", title: "Review for Unit F (part 2)" },
@@ -99,7 +92,6 @@ export const courseData = [
         title: "Periodic Motion", 
         x: 2800, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "G12", title: "Review of Unit G (part 1)" },
             { number: "G13", title: "Review of Unit G (part 2)" },
@@ -114,7 +106,6 @@ export const courseData = [
         title: "Growth & Decay", 
         x: 3200, 
         y: l2, 
-        completed: false,
         videos: [
             { number: "N3", title: "Review of Air Resistance" },
             { number: "N4", title: "Review of Air Resistance (part 2)" }
@@ -128,7 +119,6 @@ export const courseData = [
         title: "Motion Concepts", 
         x: 300, 
         y: l5, 
-        completed: false,
         videos: [
             { number: "A1", title: "Distance, Position, Displacement, Speed, Velocity and Acceleration" },
         ],
@@ -139,7 +129,6 @@ export const courseData = [
         title: "Kinematic Equations & Calculus", 
         x: 300, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "A2", title: "Deriving the Kinematics Equations for Straight-Line Uniform Acceleration Using the v vs. t Graph" },
             { number: "A3", title: "Deriving the Kinematics Equations for Straight-Line Uniform Acceleration Using Calculus" },
@@ -152,7 +141,6 @@ export const courseData = [
         title: "Projectile Motion", 
         x: 300, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "A4", title: "Projectile Motion Basics" }
         ],
@@ -163,7 +151,6 @@ export const courseData = [
         title: "Vectors", 
         x: 500, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "A6", title: "Vector Basics (Part I)" },
             { number: "A7", title: "Vector Basics (part 2)" }
@@ -175,7 +162,6 @@ export const courseData = [
         title: "Relative Velocity", 
         x: 500, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "A5", title: "Relative Velocity" }
         ],
@@ -188,7 +174,6 @@ export const courseData = [
         title: "Newton's Laws & Force Analysis", 
         x: 700, 
         y: l5, 
-        completed: false,
         videos: [
             { number: "B1", title: "Solving Newton's Second Law Problems" },
             { number: "B1.1", title: "Basics on the Force of Tension" },
@@ -203,7 +188,6 @@ export const courseData = [
         title: "Multiple-Body Systems & Pulleys", 
         x: 700, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "B2.1", title: "Two Newton's 2nd Law Example Problems: Ball Hanging From the Ceiling of a Truck and Crate in a Truck" },
             { number: "B3", title: "Solving Problems Involving Multiple-Bodies Using Newton's Laws" },
@@ -217,7 +201,6 @@ export const courseData = [
         title: "Elevator Problems", 
         x: 700, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "B8", title: "Elevator Problems and Newton's Laws" }
         ],
@@ -228,7 +211,6 @@ export const courseData = [
         title: "Circular Motion & Banked Turns", 
         x: 900, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "B5", title: "Circular Motion Problems" },
             { number: "B6", title: "Circular Motion Problems (part 2)" },
@@ -245,7 +227,6 @@ export const courseData = [
         title: "Dot Product & Work Basics", 
         x: 1100, 
         y: l5, 
-        completed: false,
         videos: [
             { number: "C0", title: "Part 1 of the Dot Product or Scalar Product" },
             { number: "C1", title: "The Dot Product or the Scalar Product" },
@@ -258,7 +239,6 @@ export const courseData = [
         title: "Work by Forces", 
         x: 1100, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "C4", title: "Work Done on an Object by a Constant Force" },
             { number: "C5", title: "Work Done on an Object by a Varying Force" }
@@ -270,7 +250,6 @@ export const courseData = [
         title: "Power & Efficiency", 
         x: 1100, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "C6", title: "Power and Efficiency" }
         ],
@@ -281,7 +260,6 @@ export const courseData = [
         title: "Conservative Forces & Energy", 
         x: 1300, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "C7", title: "Conservative and Non-Conservative Forces" },
             { number: "C8", title: "Conservative and Non-Conservative Forces (part 2)" },
@@ -296,7 +274,6 @@ export const courseData = [
         title: "Linear Momentum & Collisions", 
         x: 1500, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "D1", title: "Momentum Basics" },
             { number: "D2", title: "Types of Collisions" },
@@ -309,7 +286,6 @@ export const courseData = [
         title: "2D Collisions & Ballistic Pendulum", 
         x: 1500, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "D4", title: "Collisions in 2 Dimensions" },
             { number: "D5", title: "Ballistic Pendulum Problems" }
@@ -323,7 +299,6 @@ export const courseData = [
         title: "Static Equilibrium", 
         x: 1700, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "E7", title: "Static Equilibrium Problems" },
             { number: "E8", title: "Static Equilibrium Problems (part 2)" },
@@ -336,7 +311,6 @@ export const courseData = [
         title: "Rotational Kinetic Energy", 
         x: 2100, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "E14", title: "Rotational Kinetic Energy (part 1)" },
             { number: "E15", title: "Rotational Kinetic Energy (part 2)" },
@@ -349,7 +323,6 @@ export const courseData = [
         title: "Rotational Dynamics", 
         x: 1900, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "E11", title: "Rotational Dynamics (Newton's Second Law in Rotational Motion)" },
             { number: "E12", title: "Rotational Dynamics (part 2)" },
@@ -362,7 +335,6 @@ export const courseData = [
         title: "Rotational Kinematics", 
         x: 2000, 
         y: l5, 
-        completed: false,
         videos: [
             { number: "E1", title: "Rotational Kinematics" },
             { number: "E2", title: "Rotational Kinematics (part 2)" },
@@ -375,7 +347,6 @@ export const courseData = [
         title: "Angular Momentum", 
         x: 2100, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "E16", title: "Angular Momentum" },
             { number: "E17", title: "Angular Momentum (part 2)" }
@@ -387,7 +358,6 @@ export const courseData = [
         title: "Torque & Cross Product", 
         x: 1700, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "E4", title: "Torque and the Cross-Product (or Vector Product)" },
             { number: "E5", title: "Torque and the Cross-Product (part 2)" },
@@ -400,7 +370,6 @@ export const courseData = [
         title: "Rotational Inertia", 
         x: 1900, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "E9", title: "Rotational Inertia or Moment of Inertia" },
             { number: "E9.1", title: "Rotational Inertia for a Long Slender Rod" },
@@ -419,7 +388,6 @@ export const courseData = [
         title: "Gravitational Force & Energy", 
         x: 2300, 
         y: l5, 
-        completed: false,
         videos: [
             { number: "F1", title: "The Gravitational Force" },
             { number: "F2", title: "Gravitational Potential Energy" },
@@ -432,7 +400,6 @@ export const courseData = [
         title: "Gravitational Fields & Circular Orbits", 
         x: 2300, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "F4", title: "The Gravitational Field Strength" },
             { number: "F5", title: "Satellites in Circular Orbit" }
@@ -444,7 +411,6 @@ export const courseData = [
         title: "Kepler's Laws", 
         x: 2300, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "F6", title: "Kepler's 3 Laws of Planetary Motion" }
         ],
@@ -455,7 +421,6 @@ export const courseData = [
         title: "Elliptical Orbits & Conservation", 
         x: 2500, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "F7", title: "Elliptical Orbits and the Conservation of Energy" },
             { number: "F8", title: "Elliptical Orbits and the Conservation of Angular Momentum" }
@@ -467,7 +432,6 @@ export const courseData = [
         title: "Escape Velocity & Binary Systems", 
         x: 2500, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "F9", title: "Escape Velocity" },
             { number: "F10", title: "The Physics of Binary Star Systems" }
@@ -481,7 +445,6 @@ export const courseData = [
         title: "SHM Kinematics & Graphs", 
         x: 2700, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "G1", title: "The Kinematics of Harmonic Motion (part 1): An Introduction into Harmonic Motion" },
             { number: "G2", title: "The Kinematics of Harmonic Motion (part 2)" },
@@ -494,7 +457,6 @@ export const courseData = [
         title: "SHM Dynamics & Energy", 
         x: 2700, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "G4", title: "The Dynamics of Simple Harmonic Motion (part 1)" },
             { number: "G5", title: "Energy Conservation and Simple Harmonic Motion" }
@@ -506,7 +468,6 @@ export const courseData = [
         title: "Spring Systems", 
         x: 2900, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "G6", title: "Harmonic Oscillator with a Crate on Top of a Crate" },
             { number: "G7", title: "Springs in Series and Parallel" },
@@ -519,7 +480,6 @@ export const courseData = [
         title: "Pendulum Motion", 
         x: 2900, 
         y: l4, 
-        completed: false,
         videos: [
             { number: "G8", title: "The Period of a Simple Pendulum" },
             { number: "G9", title: "The Period of a Physical Pendulum" },
@@ -534,7 +494,6 @@ export const courseData = [
         title: "Air Resistance & Falling Objects", 
         x: 3200, 
         y: l3, 
-        completed: false,
         videos: [
             { number: "N1", title: "Objects Falling With Air Resistance" },
             { number: "N2", title: "Objects Falling With Air Resistance (part 2)" }

@@ -1,4 +1,3 @@
-import { CheckCircle, Circle } from 'lucide-react';
 import { useMemo } from 'react';
 import { useProgress } from "../../contexts/ProgressContext";
 
@@ -68,12 +67,6 @@ export default function Node({title,id,x,y,onClick}:NodeProps){
           <div className="font-bold text-base leading-tight truncate">
             {title}
           </div>
-        </div>
-        <div className="ml-3 flex-shrink-0">
-          {completed
-            ? <CheckCircle className="w-5 h-5 text-white" />
-            : <Circle className="w-5 h-5 text-white" />
-          }
         </div>
       </div>
       {/* Add progress bar at the bottom of the node */}

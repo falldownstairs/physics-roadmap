@@ -50,22 +50,49 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         if (data.isAuthenticated && data.user) {
           setUser(data.user);
+          // Persist user data to localStorage
+          localStorage.setItem('user', JSON.stringify(data.user));
         } else {
           setUser(null);
+          localStorage.removeItem('user');
         }
       } else {
         console.log('User fetch failed:', response.status);
         setUser(null);
+        localStorage.removeItem('user');
       }
     } catch (error) {
       console.error('Error fetching user:', error);
-      setUser(null);
+      // On network error, try to restore from localStorage
+      const cachedUser = localStorage.getItem('user');
+      if (cachedUser) {
+        try {
+          setUser(JSON.parse(cachedUser));
+          console.log('Restored user from cache');
+        } catch {
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // Try to load cached user immediately for faster UI
+    const cachedUser = localStorage.getItem('user');
+    if (cachedUser) {
+      try {
+        setUser(JSON.parse(cachedUser));
+      } catch {
+        localStorage.removeItem('user');
+      }
+    }
+    
+    // Then verify with backend
     fetchUser();
     
     // Refetch user when tab becomes visible (in case auth happened in another tab)
@@ -75,8 +102,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
     
+    // Periodically refresh session (every 15 minutes)
+    const refreshInterval = setInterval(() => {
+      fetchUser();
+    }, 15 * 60 * 1000);
+    
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(refreshInterval);
+    };
   }, []);
 
   const logout = async () => {
@@ -86,6 +121,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         credentials: 'include'
       });
       setUser(null);
+      localStorage.removeItem('user');
     } catch (error) {
       console.error('Logout error:', error);
     }

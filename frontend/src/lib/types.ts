@@ -1,7 +1,14 @@
+export interface QuestionImage {
+  src: string;
+  alt: string;
+}
+
 export interface MultipleChoiceQuestion {
   type: 'multiple-choice';
   question: string;
+  image?: QuestionImage;
   options: string[];
+  optionImages?: (QuestionImage | null)[];
   correctAnswer: number;
   explanation: string;
 }
@@ -9,6 +16,7 @@ export interface MultipleChoiceQuestion {
 export interface MathInputQuestion {
   type: 'math-input';
   question: string;
+  image?: QuestionImage;
   mathAnswer: string;
   explanation: string;
 }

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const path = require('path');
 
 require('dotenv').config();
 require('./config/passport'); // Import passport configuration
@@ -80,6 +81,15 @@ app.use('/api/progress', (req, res, next) => {
 
 // Initialize in-memory data
 dataService.initializeData();
+
+// Serve static images - map /images/lessons to the data folder
+app.use('/images/lessons', express.static(path.join(__dirname, 'data')));
+
+// Add logging middleware for image requests to help debug
+app.use('/images', (req, res, next) => {
+  console.log('[STATIC] Image request:', req.path);
+  next();
+});
 
 // Auth routes
 app.use('/api/auth', authRoutes);

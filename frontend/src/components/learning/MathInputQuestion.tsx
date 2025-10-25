@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { MathInputQuestion as MIQuestion } from '@/lib/types';
 import Mexp from 'math-expression-evaluator';
+import QuestionImage from './QuestionImage';
 
 // Dynamically import MathQuill with no SSR
 const EditableMathFieldComponent = dynamic(
@@ -148,6 +149,16 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
 
   return (
     <div>
+      {question.image && (
+        <div className="mb-6">
+          <QuestionImage 
+            src={question.image.src} 
+            alt={question.image.alt}
+            className="max-w-2xl mx-auto"
+          />
+        </div>
+      )}
+
       <div className="space-y-2">
         <div className="relative w-full p-4 border-2 rounded-lg bg-white border-slate-200 focus-within:border-blue-600">
           {!latex && !isFocused && (

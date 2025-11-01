@@ -18,6 +18,7 @@ export interface MathInputQuestion {
   question: string;
   image?: QuestionImage;
   mathAnswer: string;
+  answerRange?: number; // Optional: acceptable range for numerical answers
   explanation: string;
 }
 

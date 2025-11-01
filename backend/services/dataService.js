@@ -81,18 +81,9 @@ function getCourseById(courseId) {
 function processImageUrl(courseId, topicId, lessonId, imageData) {
   if (!imageData) return undefined;
   
-  // Include topicId in the path if it exists
   const url = topicId 
     ? `/images/lessons/${courseId}/${topicId}/${lessonId}/${imageData.src}`
     : `/images/lessons/${courseId}/${lessonId}/${imageData.src}`;
-    
-  console.log('[DataService] Processing image URL:', {
-    courseId,
-    topicId,
-    lessonId,
-    original: imageData.src,
-    processed: url
-  });
   
   return {
     src: url,
@@ -104,22 +95,14 @@ function processImageUrl(courseId, topicId, lessonId, imageData) {
 function processQuestionImages(courseId, topicId, lessonId, question) {
   const processedQuestion = { ...question };
   
-  // Process main question image
   if (question.image) {
-    console.log('[DataService] Processing main question image');
     processedQuestion.image = processImageUrl(courseId, topicId, lessonId, question.image);
   }
   
-  // Process option images for multiple choice
   if (question.type === 'multiple-choice' && question.optionImages) {
-    console.log('[DataService] Processing option images, count:', question.optionImages.length);
-    processedQuestion.optionImages = question.optionImages.map((img, idx) => {
-      if (img) {
-        console.log(`[DataService] Processing option image ${idx}`);
-        return processImageUrl(courseId, topicId, lessonId, img);
-      }
-      return null;
-    });
+    processedQuestion.optionImages = question.optionImages.map(img => 
+      img ? processImageUrl(courseId, topicId, lessonId, img) : null
+    );
   }
   
   return processedQuestion;
@@ -128,14 +111,8 @@ function processQuestionImages(courseId, topicId, lessonId, question) {
 // Get lesson by id (modified to process images)
 function getLessonById(lessonId) {
   const lesson = dataStore.lessons.get(lessonId);
-  if (!lesson) {
-    console.log('[DataService] Lesson not found:', lessonId);
-    return null;
-  }
+  if (!lesson) return null;
   
-  console.log('[DataService] Found lesson:', lessonId);
-  
-  // Find which course this lesson belongs to
   let courseId = null;
   for (const [id, course] of dataStore.courses) {
     if (course.lessons.includes(lessonId)) {
@@ -144,32 +121,18 @@ function getLessonById(lessonId) {
     }
   }
   
-  if (!courseId) {
-    console.log('[DataService] Course not found for lesson:', lessonId);
-    return lesson;
-  }
+  if (!courseId) return lesson;
   
-  // Get topicId from the lesson if it exists
   const topicId = lesson.topicId;
   
-  console.log('[DataService] Processing lesson images for course:', courseId, 'topic:', topicId);
-  
-  // Process all video questions to add full image URLs
   const processedLesson = {
     ...lesson,
-    videos: lesson.videos.map((video, videoIdx) => {
-      console.log(`[DataService] Processing video ${videoIdx}, questions:`, video.questions.length);
-      return {
-        ...video,
-        questions: video.questions.map((q, qIdx) => {
-          console.log(`[DataService] Processing question ${qIdx}, type:`, q.type);
-          return processQuestionImages(courseId, topicId, lessonId, q);
-        })
-      };
-    })
+    videos: lesson.videos.map(video => ({
+      ...video,
+      questions: video.questions.map(q => processQuestionImages(courseId, topicId, lessonId, q))
+    }))
   };
   
-  console.log('[DataService] Lesson processing complete');
   return processedLesson;
 }
 

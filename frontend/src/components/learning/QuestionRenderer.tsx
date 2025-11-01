@@ -1,4 +1,5 @@
 import { Question } from '@/lib/types';
+import { memo } from 'react';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import MathInputQuestion from './MathInputQuestion';
 import WordQuestion from './WordQuestion';
@@ -13,16 +14,17 @@ interface QuestionRendererProps {
   isCompleted: boolean;
 }
 
-export default function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCorrect, isCompleted }: QuestionRendererProps) {
+function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCorrect, isCompleted }: QuestionRendererProps) {
   // Render question text with LaTeX support
-  const QuestionText = () => (
+  const QuestionText = memo(() => (
     <div className="mb-4">
       <LatexRenderer 
         content={question.question}
         className="text-lg font-medium text-slate-800"
       />
     </div>
-  );
+  ));
+  QuestionText.displayName = 'QuestionText';
 
   switch (question.type) {
     case 'multiple-choice':
@@ -71,3 +73,14 @@ export default function QuestionRenderer({ question, onSubmit, disabled, submitt
       return <div>Unknown question type</div>;
   }
 }
+
+// Memoize QuestionRenderer - only re-render if question content or completion status changes
+export default memo(QuestionRenderer, (prevProps, nextProps) => {
+  return (
+    prevProps.question.question === nextProps.question.question &&
+    prevProps.submittedAnswer === nextProps.submittedAnswer &&
+    prevProps.isCorrect === nextProps.isCorrect &&
+    prevProps.isCompleted === nextProps.isCompleted &&
+    prevProps.disabled === nextProps.disabled
+  );
+});

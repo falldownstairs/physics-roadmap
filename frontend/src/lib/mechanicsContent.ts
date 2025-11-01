@@ -132,7 +132,6 @@ export const courseData = [
         videos: [
             { number: "A2", title: "Deriving the Kinematics Equations for Straight-Line Uniform Acceleration Using the v vs. t Graph" },
             { number: "A3", title: "Deriving the Kinematics Equations for Straight-Line Uniform Acceleration Using Calculus" },
-            { number: "C3", title: "Using Calculus to Derive the Kinematics Equations for Straight-line Motion with Constant Acceleration" }
         ],
         description: "Mathematical derivations of kinematic equations using graphical and calculus-based approaches."
     },

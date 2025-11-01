@@ -26,23 +26,17 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
   // Load progress only from API for authenticated users
   useEffect(() => {
     async function loadProgress() {
-      // Wait for auth to load
       if (authLoading) return;
       
       setIsLoading(true);
       
-      // Only try to load from API if authenticated
       if (isUserAuthenticated) {
-        console.log('Loading progress for lesson:', lesson.id);
         const apiProgress = await fetchProgress(lesson.id);
         
         if (apiProgress) {
-          console.log('Progress loaded:', apiProgress);
           setCurrentVideoIndex(apiProgress.videoIndex);
           setCurrentQuestionIndex(apiProgress.questionIndex);
           setUserAnswers(apiProgress.userAnswers);
-        } else {
-          console.log('No existing progress found');
         }
       }
       
@@ -55,16 +49,8 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
 
   // Save progress whenever key state changes
   useEffect(() => {
-    // Don't save until we've loaded initial progress
-    if (!hasLoadedProgress.current) {
-      console.log('Skipping save - progress not loaded yet');
-      return;
-    }
-    
-    if (authLoading || !isUserAuthenticated) {
-      console.log('Skipping save - not authenticated');
-      return;
-    }
+    if (!hasLoadedProgress.current) return;
+    if (authLoading || !isUserAuthenticated) return;
     
     const progress: ModuleProgress = {
       videoIndex: currentVideoIndex,
@@ -72,34 +58,35 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
       userAnswers
     };
     
-    console.log('Attempting to save progress:', progress);
-    
-    saveProgress(lesson.id, progress)
-      .then(() => {
-        console.log('✅ Progress saved successfully');
-      })
-      .catch(err => {
-        console.error('❌ Failed to save progress:', err);
-      });
+    saveProgress(lesson.id, progress).catch(err => {
+      console.error('Failed to save progress:', err);
+    });
   }, [currentVideoIndex, currentQuestionIndex, userAnswers, lesson.id, isUserAuthenticated, authLoading]);
 
   const handleAnswerSubmit = (videoIdx: number, questionIdx: number, answer: string | number, isCorrect: boolean) => {
-    const userAnswer: UserAnswer = {
-      videoIndex: videoIdx,
-      questionIndex: questionIdx,
-      answer,
-      isCorrect
-    };
+    // Use functional update to avoid stale closures
+    setUserAnswers(prevAnswers => {
+      const userAnswer: UserAnswer = {
+        videoIndex: videoIdx,
+        questionIndex: questionIdx,
+        answer,
+        isCorrect
+      };
+      
+      const filteredAnswers = prevAnswers.filter(
+        ans => !(ans.videoIndex === videoIdx && ans.questionIndex === questionIdx)
+      );
+      
+      const newUserAnswers = [...filteredAnswers, userAnswer].sort((a, b) => {
+        if (a.videoIndex !== b.videoIndex) {
+          return a.videoIndex - b.videoIndex;
+        }
+        return a.questionIndex - b.questionIndex;
+      });
+      
+      return newUserAnswers;
+    });
     
-    // Remove any previous answer for this question to avoid duplicates
-    const filteredAnswers = userAnswers.filter(
-      ans => !(ans.videoIndex === videoIdx && ans.questionIndex === questionIdx)
-    );
-    
-    const newUserAnswers = [...filteredAnswers, userAnswer];
-    setUserAnswers(newUserAnswers);
-    
-    // Check if this unlocks a new question (user answered the furthest unlocked question)
     const isAnsweringFurthestQuestion = 
       videoIdx === currentVideoIndex && questionIdx === currentQuestionIndex;
     
@@ -107,10 +94,8 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
       const currentVideo = lesson.videos[videoIdx];
       
       if (questionIdx < currentVideo.questions.length - 1) {
-        // Unlock next question in current video
         setCurrentQuestionIndex(prev => prev + 1);
       } else if (videoIdx < lesson.videos.length - 1) {
-        // Unlock first question of next video
         setCurrentVideoIndex(prev => prev + 1);
         setCurrentQuestionIndex(0);
       }

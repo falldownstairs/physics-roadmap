@@ -49,6 +49,7 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
   const [isMounted, setIsMounted] = useState(false);
   const [mathField, setMathField] = useState<any>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Reset when question changes
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
     };
   }, []);
 
-  const validateMathAnswer = (userAnswer: string, correctAnswer: string): boolean => {
+  const validateMathAnswer = (userAnswer: string, correctAnswer: string, answerRange?: number): boolean => {
     try {
       const normalizeExpression = (expr: string) => {
         return expr
@@ -113,14 +114,23 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
       const normalizedUser = normalizeExpression(userAnswer);
       const normalizedCorrect = normalizeExpression(correctAnswer);
 
+      // First check for exact string match
       if (normalizedUser === normalizedCorrect) {
         return true;
       }
 
+      // Try numerical evaluation
       const mexp = new Mexp();
       try {
         const userValue = mexp.eval(normalizedUser);
         const correctValue = mexp.eval(normalizedCorrect);
+        
+        // If answerRange is provided, check if within range
+        if (answerRange !== undefined) {
+          return Math.abs(userValue - correctValue) <= answerRange;
+        }
+        
+        // Default tolerance for numerical answers
         return Math.abs(userValue - correctValue) < 0.0001;
       } catch {
         return normalizedUser === normalizedCorrect;
@@ -131,10 +141,17 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
     }
   };
 
-  const handleSubmit = () => {
-    if (!latex.trim()) return;
-    const isCorrect = validateMathAnswer(latex, question.mathAnswer);
+  const handleSubmit = async () => {
+    if (!latex.trim() || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    const isCorrect = validateMathAnswer(latex, question.mathAnswer, question.answerRange);
+    
+    // Add 0.25 second delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     onSubmit(latex, isCorrect);
+    setIsSubmitting(false);
   };
 
   if (!isMounted) {
@@ -217,10 +234,20 @@ export default function MathInputQuestion({ question, onSubmit, disabled, submit
       </div>
       <button
         onClick={handleSubmit}
-        disabled={!latex.trim()}
-        className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer"
+        disabled={!latex.trim() || isSubmitting}
+        className="mt-2 w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
       >
-        Submit Answer
+        {isSubmitting ? (
+          <>
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Submitting...
+          </>
+        ) : (
+          'Submit Answer'
+        )}
       </button>
     </div>
   );

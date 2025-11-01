@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { MathJax } from 'better-react-mathjax';
 
 interface LatexRendererProps {
@@ -8,7 +8,7 @@ interface LatexRendererProps {
   className?: string;
 }
 
-export default function LatexRenderer({ content, className = '' }: LatexRendererProps) {
+function LatexRenderer({ content, className = '' }: LatexRendererProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -20,8 +20,14 @@ export default function LatexRenderer({ content, className = '' }: LatexRenderer
   }
 
   return (
-    <MathJax className={className} inline dynamic>
+    <MathJax className={className} inline>
       {content}
     </MathJax>
   );
 }
+
+// Memoize with custom comparison - only re-render if content or className changes
+export default memo(LatexRenderer, (prevProps, nextProps) => {
+  return prevProps.content === nextProps.content && 
+         prevProps.className === nextProps.className;
+});

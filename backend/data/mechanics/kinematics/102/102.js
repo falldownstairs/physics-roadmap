@@ -2,67 +2,32 @@ module.exports = {
   id: "102",
   courseId: "mechanics",
   topicId: "kinematics",
-  title: "Kinematic Equations & Calculus",
-  estimatedTime: "20 minutes",
+  title: "Kinematic Equation Derivations",
+  estimatedTime: "10 minutes",
   videos: [
     {
-      videoId: "yfnM0PNm9Q8",
-      videoTitle: "Distance, Position, Displacement, Speed, Velocity and Acceleration",
-      questions: [
-        {
-          type: 'math-input',
-          question: "Write the formula for average velocity in terms of displacement ($\\Delta x$) and time ($\\Delta t$).",
-          image: {
-            src: 'sc.png',
-            alt: 'Free body diagram showing forces on a block'
-          },
-          mathAnswer: "\\frac{\\Delta x}{\\Delta t}",
-          explanation: "Average velocity is defined as displacement divided by time: $v = \\frac{\\Delta x}{\\Delta t}$."
-        },
-        {
-          type: 'multiple-choice',
-          question: "Which of the following quantities is a vector?",
-          options: ["Speed", "Distance", "Displacement", "Time"],
-          optionImages: [
-            { src: 'sc.png', alt: 'Forces pointing left and down' },
-            { src: 'sc.png', alt: 'Forces pointing right and up' },
-            { src: 'sc.png', alt: 'Forces balanced vertically' },
-            { src: 'sc.png', alt: 'Forces at 45 degree angle' }
-          ],
-          correctAnswer: 2,
-          explanation: "$\\text{Displacement}$ is a vector because it has both magnitude and direction. Unlike distance (scalar), displacement includes the direction of motion from start to finish."
-        }
-      ]
-    },
-    {
       videoId: "lZm2vZn4gSg",
-      videoTitle: "Deriving the Kinematics Equations for Straight-Line Uniform Acceleration Using the v vs. t Graph",
+      videoTitle: "Deriving Kinematics Equations Using Graphs (Velocity vs. Time)",
       questions: [
         {
           type: 'multiple-choice',
-          question: "The area under a velocity vs. time graph represents which physical quantity?",
-          options: ["Acceleration", "Displacement", "Force", "Speed"],
+          question: "The derivations of the three standard kinematic equations are only valid if which condition is met?",
+          options: ["Velocity is zero.", "Acceleration is constant.", "Displacement is zero.", "Initial velocity is zero."],
           correctAnswer: 1,
-          explanation: "The area under a velocity-time graph gives **displacement**. This is because: $$\\Delta x = \\int v \\, dt$$ where the integral represents the area under the curve."
+          explanation: "The kinematics equations require a $\\text{constant acceleration}$ ($a$) to be valid. The derivation from a $\\text{velocity}$ versus $\\text{time}$ graph relies on the line having a constant $\\text{slope}$."
         }
       ]
     },
     {
       videoId: "JnFykw00HvE",
-      videoTitle: "Deriving the Kinematics Equations for Straight-Line Uniform Acceleration Using Calculus.",
+      videoTitle: "Deriving Kinematics Equations Using Calculus",
       questions: [
         {
-          type: 'math-input',
-          question: "Express acceleration ($a$) as the derivative of velocity ($v$) with respect to time ($t$).",
-          mathAnswer: "a = \\frac{dv}{dt}",
-          explanation: "Acceleration is the time derivative of velocity: $$a = \\frac{dv}{dt}$$ This fundamental relationship shows that acceleration measures how velocity changes over time."
-        },
-        {
           type: 'multiple-choice',
-          question: "Which calculus operation is used to find velocity from acceleration?",
-          options: ["Differentiation", "Integration", "Multiplication", "Division"],
-          correctAnswer: 1,
-          explanation: "**Integration** of acceleration with respect to time gives velocity: $$v = \\int a \\, dt$$ This is the inverse operation of differentiation, since $a = \\frac{dv}{dt}$."
+          question: "In the calculus-based derivation, which physical quantity is $\\text{integrated}$ with respect to $\\text{time}$ to obtain the $\\text{displacement}$?",
+          options: ["Acceleration ($a$)", "Jerk ($j$)", "Velocity ($v$)", "Force ($F$)"],
+          correctAnswer: 2,
+          explanation: "The $\\text{velocity}$ ($v$) is defined as the derivative of $\\text{position}$. Therefore, integrating $\\text{velocity}$ with respect to $\\text{time}$ yields $\\text{displacement}$: $$\\Delta x = \\int v \\, dt$$"
         }
       ]
     }

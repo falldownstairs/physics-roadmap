@@ -197,65 +197,6 @@ $1/2 m v^2$  (no LaTeX)             $\\frac{1}{2}mv^2$
 $$\\$$int$$  (double $$)            $$\\int$$
 
 ================================================================================
-                    FORMATTING MULTI-LINE EXPLANATIONS
-================================================================================
-
-NEW LINES AND PARAGRAPHS:
-
-Use `\n\n` (double newline) to separate paragraphs/sections
-Use `\n` (single newline) within a section to create line breaks
-
-⚠️ IMPORTANT: Double asterisks ** do NOT work for bolding in explanations
-   Use numbered lists (1., 2., etc.) or section headers with text instead
-
-Example with proper formatting:
-
-  explanation: explanation: "Since the ball is launched horizontally, the initial vertical velocity ($v_{iy}$) is $0 \\text{ m/s}$. The horizontal and vertical motions are independent.\n\n1. Find time from vertical motion:\n\nUse: $$\\Delta y = v_{iy}t + \\frac{1}{2}a_y t^2$$ We have: $$-1.50 \\text{ m} = 0 + \\frac{1}{2}(-9.8 \\text{ m/s}^2) t^2$$\n\nSolving for $t$ gives:\n\n$$t = \\sqrt{\\frac{2(1.50 \\text{ m})}{9.8 \\text{ m/s}^2}} \\approx 0.553 \\text{ s}$$\n\n2. Find initial speed from horizontal motion:\n\nThe horizontal velocity is constant, so $\\Delta x = v_{0x}t$.\n\nSolving for $v_{0x}$:\n\n$$v_{0x} = \\frac{\\Delta x}{t} = \\frac{0.65 \\text{ m}}{0.553 \\text{ s}} \\approx 1.16 \\text{ m/s}$$"
-
-This renders as:
-
-  Since the ball is launched horizontally, the initial vertical velocity (vᵢᵧ) is 0 m/s. The horizontal and vertical motions are independent.
-  
-  1. Find time from vertical motion:
-  
-  Use: 
-  
-  Δy = vᵢᵧt + ½aᵧt². 
-
-  We have: 
-  
-  -1.50 m = 0 + ½(-9.8 m/s²)t².
-  
-  Solving for t gives:
-  
-      t = √(2(1.50 m)/(9.8 m/s²)) ≈ 0.553 s
-  
-  2. Find initial speed from horizontal motion:
-  
-  The horizontal velocity is constant, so Δx = v₀ₓt.
-  
-  Solving for v₀ₓ:
-  
-      v₀ₓ = Δx/t = (0.65 m)/(0.553 s) ≈ 1.16 m/s
-
-FORMATTING RULES:
-
-1. Use `\n\n` before and after display math ($$...$$) for proper spacing
-2. Use `\n\n` between major sections or steps
-3. Use `\n` for line breaks within the same paragraph
-4. Use numbered lists (1., 2., 3.) for step-by-step solutions
-5. Put display equations ($$...$$) on their own with `\n\n` before and after
-
-SHORT EXPLANATION (single paragraph):
-  explanation: "The kinematics equations require $\\text{constant acceleration}$ to be valid."
-
-MEDIUM EXPLANATION (with equation):
-  explanation: "The velocity is the derivative of position:\n\n$$v = \\frac{dx}{dt}$$\n\nThis is a fundamental relationship in calculus."
-
-LONG EXPLANATION (multi-step with formatting):
-  explanation: "First, identify the known values.\n\n1. Find the acceleration:\n\nUse Newton's second law:\n\n$$a = \\frac{F}{m}$$\n\n2. Calculate the final velocity:\n\nUse the kinematic equation:\n\n$$v_f = v_i + at$$"
-
-================================================================================
                           QUESTION TYPES & PARAMETERS
 ================================================================================
 
@@ -371,6 +312,11 @@ Symbol      | LaTeX Code        | Rendered
 3. Test your lesson in the frontend to verify rendering
 4. Check browser console for LaTeX parsing errors
 5. For complex equations, test in an online LaTeX editor first
+
+Online LaTeX editors for testing:
+- https://www.codecogs.com/latex/eqneditor.php
+- https://latexeditor.lagrida.com/
+- https://www.overleaf.com/
 
 ================================================================================
                                   END

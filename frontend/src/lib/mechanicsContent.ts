@@ -8,12 +8,13 @@ export const courseData = [
     // Root course node
     { 
         id: 0, 
+        type: 'root' as const,
         title: "Mechanics", 
         x: 1800, 
         y: l1, 
         videos: [
-            { number: "H1", title: "The Big Picture (part 1): The Big Picture" },
-            { number: "H2", title: "The Big Picture (part 2)" }
+            { number: "H1", title: "The Big Picture (part 1): The Big Picture", videoId: "C9DZnogzMLo" },
+            { number: "H2", title: "The Big Picture (part 2)", videoId: "7B1LLCKwBH8" }
         ],
         description: "The study of motion and the forces that cause motion, covering kinematics, dynamics, energy, momentum, rotation, and periodic motion."
     },
@@ -21,101 +22,118 @@ export const courseData = [
     // Main topic nodes
     { 
         id: 1, 
+        type: 'topic' as const,
         title: "Kinematics", 
         x: 400, 
         y: l2, 
         videos: [],
+        practiceProblems: "MIT workbook: pages 9-17",
         description: "The study of describing motion without considering the forces that cause it."
     },
     { 
         id: 2, 
+        type: 'topic' as const,
         title: "Newton's Laws", 
         x: 800, 
         y: l2, 
         videos: [
-            { number: "B9", title: "Review of Unit B. Newton's Laws (part 1)" },
-            { number: "B10", title: "Review of Unit B (part 2)" },
-            { number: "B11", title: "Review of Unit B (part 3)" }
+            { number: "B9", title: "Review of Unit B. Newton's Laws (part 1)", videoId: "uvm8LsGB9DQ" },
+            { number: "B10", title: "Review of Unit B (part 2)", videoId: "bqWSLmEbN9Y" },
+            { number: "B11", title: "Review of Unit B (part 3)", videoId: "Ho1zGx16Okw" }
         ],
+        practiceProblems: "MIT workbook: pages 23-47",
         description: "The three fundamental laws that describe the relationship between forces acting on a body and its motion."
     },
     { 
         id: 3, 
+        type: 'topic' as const,
         title: "Work, Energy, Power", 
         x: 1200, 
         y: l2, 
         videos: [
-            { number: "C10", title: "Unit C Review (part 1)" },
-            { number: "C11", title: "Unit C Review (part 2)" },
-            { number: "C12", title: "Unit C Review (part 3)" },
-            { number: "C13", title: "Unit C Review (part 4)" }
+            { number: "C10", title: "Unit C Review (part 1)", videoId: "snNr11BoQYw" },
+            { number: "C11", title: "Unit C Review (part 2)", videoId: "PCmphrlpZlk" },
+            { number: "C12", title: "Unit C Review (part 3)", videoId: "nfk-6IduQHg" },
+            { number: "C13", title: "Unit C Review (part 4)", videoId: "T7jLfSWtb48" }
         ],
+        practiceProblems: "MIT workbook: pages 63-85",
         description: "The study of energy transfer, storage, and transformation in mechanical systems."
     },
     { 
         id: 4, 
+        type: 'topic' as const,
         title: "Momentum & Impulse", 
         x: 1600, 
         y: l2, 
         videos: [
-            { number: "D6", title: "Unit D Review (part 1)" },
-            { number: "D7", title: "Unit D Review (part 2)" },
-            { number: "D8", title: "Unit D Review (part 3)" }
+            { number: "D6", title: "Unit D Review (part 1)", videoId: "qH_L5GLsPog" },
+            { number: "D7", title: "Unit D Review (part 2)", videoId: "YwswrSdXRok" },
+            { number: "D8", title: "Unit D Review (part 3)", videoId: "KDUBcJuoCWw" }
         ],
+        practiceProblems: "MIT workbook: pages 101-121",
         description: "The study of momentum conservation and collision dynamics in mechanical systems."
     },
     { 
         id: 5, 
+        type: 'topic' as const,
         title: "Rotational Motion", 
         x: 2000, 
         y: l2, 
         videos: [
-            { number: "E18", title: "Unit E Review (part 1)" },
-            { number: "E19", title: "Unit E Review (part 2)" }
+            { number: "E18", title: "Unit E Review (part 1)", videoId: "agJ120BdNJQ" },
+            { number: "E19", title: "Unit E Review (part 2)", videoId: "Hbz7PuSDNxU" }
         ],
+        practiceProblems: "MIT workbook: pages 131-163",
         description: "The study of objects rotating about an axis, including torque, angular momentum, and rotational dynamics."
     },
     { 
         id: 6, 
+        type: 'topic' as const,
         title: "Satellite Motion", 
         x: 2400, 
         y: l2, 
         videos: [
-            { number: "F11", title: "Review for Unit F (part 1)" },
-            { number: "F12", title: "Review for Unit F (part 2)" },
-            { number: "F13", title: "Review for Unit F (part 3)" }
+            { number: "F11", title: "Review for Unit F (part 1)", videoId: "r_1NDhjU-jQ" },
+            { number: "F12", title: "Review for Unit F (part 2)", videoId: "1A_tnP5dVug" },
+            { number: "F13", title: "Review for Unit F (part 3)", videoId: "jlxZSPTiuMw" }
         ],
+        practiceProblems: "MIT workbook: pages 181-195",
         description: "The study of gravitational forces and orbital mechanics for satellites and planetary motion."
     },
     { 
         id: 7, 
+        type: 'topic' as const,
         title: "Periodic Motion", 
         x: 2800, 
         y: l2, 
         videos: [
-            { number: "G12", title: "Review of Unit G (part 1)" },
-            { number: "G13", title: "Review of Unit G (part 2)" },
-            { number: "G14", title: "Review of Unit G (part 3)" },
-            { number: "G15", title: "Review Unit G (part 4)" },
-            { number: "G16", title: "Review Unit G (part 5)" }
+            { number: "G12", title: "Review of Unit G (part 1)", videoId: "s3RWQJcvXLY" },
+            { number: "G13", title: "Review of Unit G (part 2)", videoId: "EWAqqoBwQaY" },
+            { number: "G14", title: "Review of Unit G (part 3)", videoId: "ojIgoe-l9Pc" },
+            { number: "G15", title: "Review Unit G (part 4)", videoId: "c4GNbF_dIlM" },
+            { number: "G16", title: "Review Unit G (part 5)", videoId: "YzXQ1jQkwIE" }
         ],
+        practiceProblems: "MIT workbook: pages 205-219",
         description: "The study of oscillatory motion including simple harmonic motion, springs, and pendulums."
     },
     { 
         id: 8, 
+        type: 'topic' as const,
         title: "Growth & Decay", 
         x: 3200, 
         y: l2, 
         videos: [
-            { number: "N3", title: "Review of Air Resistance" },
-            { number: "N4", title: "Review of Air Resistance (part 2)" }
+            { number: "N3", title: "Review of Air Resistance", videoId: "dnUetB3FiLA" },
+            { number: "N4", title: "Review of Air Resistance (part 2)", videoId: "WRCuM2D1lq4" }
         ],
+        practiceProblems: "no practice problems",
         description: "The study of exponential processes in physics, particularly air resistance effects on falling objects."
     },
   
-    // Kinematics subtopics
+    // All lesson nodes - remove homework field completely
     { 
         id: 101, 
+        type: 'lesson' as const,
         title: "Motion Concepts", 
         x: 300, 
         y: l5, 
@@ -126,6 +144,7 @@ export const courseData = [
     },
     { 
         id: 102, 
+        type: 'lesson' as const,
         title: "Kinematic Equations & Calculus", 
         x: 300, 
         y: l4, 
@@ -137,6 +156,7 @@ export const courseData = [
     },
     { 
         id: 103, 
+        type: 'lesson' as const,
         title: "Projectile Motion", 
         x: 300, 
         y: l3, 
@@ -147,6 +167,7 @@ export const courseData = [
     },
     { 
         id: 104, 
+        type: 'lesson' as const,
         title: "Vectors", 
         x: 500, 
         y: l4, 
@@ -158,6 +179,7 @@ export const courseData = [
     },
     { 
         id: 105, 
+        type: 'lesson' as const,
         title: "Relative Velocity", 
         x: 500, 
         y: l3, 
@@ -170,6 +192,7 @@ export const courseData = [
     // Newton's Laws subtopics
     { 
         id: 201, 
+        type: 'lesson' as const,
         title: "Newton's Laws & Force Analysis", 
         x: 700, 
         y: l5, 
@@ -184,6 +207,7 @@ export const courseData = [
     },
     { 
         id: 202, 
+        type: 'lesson' as const,
         title: "Multiple-Body Systems & Pulleys", 
         x: 700, 
         y: l4, 
@@ -197,6 +221,7 @@ export const courseData = [
     },
     { 
         id: 204, 
+        type: 'lesson' as const,
         title: "Elevator Problems", 
         x: 700, 
         y: l3, 
@@ -207,6 +232,7 @@ export const courseData = [
     },
     { 
         id: 203, 
+        type: 'lesson' as const,
         title: "Circular Motion & Banked Turns", 
         x: 900, 
         y: l3, 
@@ -223,6 +249,7 @@ export const courseData = [
     // Work, Energy, Power subtopics
     { 
         id: 301, 
+        type: 'lesson' as const,
         title: "Dot Product & Work Basics", 
         x: 1100, 
         y: l5, 
@@ -235,6 +262,7 @@ export const courseData = [
     },
     { 
         id: 302, 
+        type: 'lesson' as const,
         title: "Work by Forces", 
         x: 1100, 
         y: l4, 
@@ -246,6 +274,7 @@ export const courseData = [
     },
     { 
         id: 303, 
+        type: 'lesson' as const,
         title: "Power & Efficiency", 
         x: 1100, 
         y: l3, 
@@ -256,6 +285,7 @@ export const courseData = [
     },
     { 
         id: 304, 
+        type: 'lesson' as const,
         title: "Conservative Forces & Energy", 
         x: 1300, 
         y: l3, 
@@ -270,6 +300,7 @@ export const courseData = [
     // Momentum & Impulse subtopics
     { 
         id: 401, 
+        type: 'lesson' as const,
         title: "Linear Momentum & Collisions", 
         x: 1500, 
         y: l4, 
@@ -282,6 +313,7 @@ export const courseData = [
     },
     { 
         id: 402, 
+        type: 'lesson' as const,
         title: "2D Collisions & Ballistic Pendulum", 
         x: 1500, 
         y: l3, 
@@ -295,6 +327,7 @@ export const courseData = [
     // Rotational Motion subtopics
     { 
         id: 507, 
+        type: 'lesson' as const,
         title: "Static Equilibrium", 
         x: 1700, 
         y: l3, 
@@ -307,6 +340,7 @@ export const courseData = [
     },
     { 
         id: 502, 
+        type: 'lesson' as const,
         title: "Rotational Kinetic Energy", 
         x: 2100, 
         y: l4, 
@@ -319,6 +353,7 @@ export const courseData = [
     },
     { 
         id: 505, 
+        type: 'lesson' as const,
         title: "Rotational Dynamics", 
         x: 1900, 
         y: l3, 
@@ -331,6 +366,7 @@ export const courseData = [
     },
     { 
         id: 501, 
+        type: 'lesson' as const,
         title: "Rotational Kinematics", 
         x: 2000, 
         y: l5, 
@@ -343,6 +379,7 @@ export const courseData = [
     },
     { 
         id: 503, 
+        type: 'lesson' as const,
         title: "Angular Momentum", 
         x: 2100, 
         y: l3, 
@@ -354,6 +391,7 @@ export const courseData = [
     },
     { 
         id: 506, 
+        type: 'lesson' as const,
         title: "Torque & Cross Product", 
         x: 1700, 
         y: l4, 
@@ -366,6 +404,7 @@ export const courseData = [
     },
     { 
         id: 504, 
+        type: 'lesson' as const,
         title: "Rotational Inertia", 
         x: 1900, 
         y: l4, 
@@ -384,6 +423,7 @@ export const courseData = [
     // Satellite Motion subtopics
     { 
         id: 601, 
+        type: 'lesson' as const,
         title: "Gravitational Force & Energy", 
         x: 2300, 
         y: l5, 
@@ -396,6 +436,7 @@ export const courseData = [
     },
     { 
         id: 602, 
+        type: 'lesson' as const,
         title: "Gravitational Fields & Circular Orbits", 
         x: 2300, 
         y: l4, 
@@ -407,6 +448,7 @@ export const courseData = [
     },
     { 
         id: 603, 
+        type: 'lesson' as const,
         title: "Kepler's Laws", 
         x: 2300, 
         y: l3, 
@@ -417,6 +459,7 @@ export const courseData = [
     },
     { 
         id: 604, 
+        type: 'lesson' as const,
         title: "Elliptical Orbits & Conservation", 
         x: 2500, 
         y: l4, 
@@ -428,6 +471,7 @@ export const courseData = [
     },
     { 
         id: 605, 
+        type: 'lesson' as const,
         title: "Escape Velocity & Binary Systems", 
         x: 2500, 
         y: l3, 
@@ -441,6 +485,7 @@ export const courseData = [
     // Periodic Motion subtopics
     { 
         id: 701, 
+        type: 'lesson' as const,
         title: "SHM Kinematics & Graphs", 
         x: 2700, 
         y: l4, 
@@ -453,6 +498,7 @@ export const courseData = [
     },
     { 
         id: 702, 
+        type: 'lesson' as const,
         title: "SHM Dynamics & Energy", 
         x: 2700, 
         y: l3, 
@@ -464,6 +510,7 @@ export const courseData = [
     },
     { 
         id: 704, 
+        type: 'lesson' as const,
         title: "Spring Systems", 
         x: 2900, 
         y: l3, 
@@ -476,6 +523,7 @@ export const courseData = [
     },
     { 
         id: 703, 
+        type: 'lesson' as const,
         title: "Pendulum Motion", 
         x: 2900, 
         y: l4, 
@@ -490,6 +538,7 @@ export const courseData = [
     // Growth & Decay subtopic
     { 
         id: 801, 
+        type: 'lesson' as const,
         title: "Air Resistance & Falling Objects", 
         x: 3200, 
         y: l3, 

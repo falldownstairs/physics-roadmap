@@ -6,9 +6,11 @@ import { ProgressProvider } from "../../contexts/ProgressContext";
 
 interface NodeData {
   id: number;
+  type: 'lesson' | 'topic' | 'root';
   title: string;
   description: string;
   videos: { number: string; title: string }[];
+  practiceProblems?: string;
   x: number;
   y: number;
 }
@@ -288,7 +290,8 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
                 <Node 
                   key={node.id} 
                   id={node.id} 
-                  title={node.title} 
+                  title={node.title}
+                  type={node.type}
                   x={node.x} 
                   y={node.y} 
                   course={courseName}

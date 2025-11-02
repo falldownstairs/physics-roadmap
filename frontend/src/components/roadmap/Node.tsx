@@ -5,51 +5,57 @@ interface NodeProps{
   title: string;
   id: number;
   course: string;
+  type: 'lesson' | 'topic' | 'root';
   x: number;
   y: number;
   onClick: (id: number) => void;
 }
 
-export default function Node({title,id,x,y,onClick}:NodeProps){
-  const { progressData, totalProblems, isLoading } = useProgress();
+export default function Node({title, id, type, x, y, onClick}: NodeProps){
+  const { progressData, totalProblems, completionStatus, isLoading } = useProgress();
   
-  // Calculate progress percentage
+  // Calculate progress percentage for all node types
   const progressPercentage = useMemo(() => {
     if (isLoading) return 0;
     
-    const lessonId = id.toString();
-    const lessonProgress = progressData[lessonId];
-    const total = totalProblems[lessonId] || 0;
+    const idStr = id.toString();
     
-    if (!lessonProgress || total === 0) return 0;
-    
-    return Math.min(100, (lessonProgress.userAnswers.length / total) * 100);
-  }, [id, progressData, totalProblems, isLoading]);
-
-  // Determine completion based on progress
-  const completed = progressPercentage === 100;
-  
-  // ✅ PERFORMANCE FIX: Memoize color classes
-  const nodeColorClass = useMemo(() => {
-    if (completed) {
-      return 'bg-violet-700 hover:bg-violet-600 shadow-lg shadow-violet-700/25'; 
+    if (type === 'lesson') {
+      const lessonProgress = progressData[idStr];
+      const total = totalProblems[idStr] || 0;
+      
+      if (!lessonProgress || total === 0) return 0;
+      
+      return Math.min(100, (lessonProgress.userAnswers.length / total) * 100);
+    } else if (type === 'topic') {
+      const topicData = completionStatus.topics[idStr];
+      if (!topicData || topicData.total === 0) return 0;
+      
+      return Math.min(100, (topicData.completedCount / topicData.total) * 100);
     } else {
-      return 'bg-[#3b5be7] hover:bg-[#5276ff] shadow-lg shadow-blue-600/25';
+      // root node
+      const topicNodes = Object.values(completionStatus.topics);
+      if (topicNodes.length === 0) return 0;
+      
+      const completedTopics = topicNodes.filter(t => t.completed).length;
+      return Math.min(100, (completedTopics / topicNodes.length) * 100);
     }
-  }, [completed]);
+  }, [id, type, progressData, totalProblems, completionStatus, isLoading]);
+
+  // Determine if completed
+  const isCompleted = progressPercentage === 100;
   
+  // Determine color based on completion
+  const nodeColorClass = useMemo(() => {
+    return isCompleted
+      ? 'bg-violet-700 hover:bg-violet-600 shadow-lg shadow-violet-700/25'
+      : 'bg-[#3b5be7] hover:bg-[#5276ff] shadow-lg shadow-blue-600/25';
+  }, [isCompleted]);
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent drag behavior
+    e.stopPropagation();
     onClick(id);
   };
-
-  console.log(`Node ${id} progress:`, {
-  lessonId: id.toString(),
-  progress: progressData[id.toString()]?.userAnswers?.length || 0,
-  total: totalProblems[id.toString()] || 0,
-  percentage: progressPercentage
-  });
 
   return(
     <div
@@ -69,7 +75,8 @@ export default function Node({title,id,x,y,onClick}:NodeProps){
           </div>
         </div>
       </div>
-      {/* Add progress bar at the bottom of the node */}
+      
+      {/* Progress bar for all node types */}
       <div className="absolute bottom-3 left-2 right-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
         <div 
           className="h-full bg-green-500 transition-all duration-500 ease-out rounded-full"

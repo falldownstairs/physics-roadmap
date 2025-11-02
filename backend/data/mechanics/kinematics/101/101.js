@@ -22,7 +22,7 @@ module.exports = {
           options: ["$7 \\text{ m/s}^2$", "$4 \\text{ m/s}^2$", "$12 \\text{ m/s}^2$", "$6 \\text{ m/s}^2$"],
           correctAnswer: 1,
           explanation: "$\\text{Average acceleration}$ is the $\\text{change in velocity}$ divided by the $\\text{change in time}$: $$\\bar{a} = \\\\frac{\\\\Delta v}{\\\\Delta t} = \\\\frac{v_f - v_i}{\\\\Delta t} = \\\\frac{(17 \\text{ m/s}) - (5 \\text{ m/s})}{3 \\text{ s}} = \\\\frac{12 \\text{ m/s}}{3 \\text{ s}} = 4 \\text{ m/s}^2$$"
-        },
+        }
       ]
     }
   ]

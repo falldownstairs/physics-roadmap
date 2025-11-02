@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const dataService = require('../services/dataService');
+const { buildDependencyTree, getChildLessons, getChildTopics } = require('../utils/dependencyTree');
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
@@ -135,6 +136,59 @@ router.get('/course/:courseName/problems', isAuthenticated, async (req, res) => 
     res.json(problemCounts);
   } catch (error) {
     console.error('Error fetching problem counts:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get completion status for all nodes in a course
+router.get('/course/:courseName/completion', isAuthenticated, async (req, res) => {
+  try {
+    const { courseName } = req.params;
+    const userId = req.user._id;
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Get course data (you'll need to pass this from frontend or load it)
+    // For now, we'll calculate based on lesson IDs from user progress
+    const lessons = dataService.getLessonsForCourse(courseName);
+    
+    // Build problem counts map
+    const problemCounts = {};
+    lessons.forEach(lesson => {
+      let totalProblems = 0;
+      if (lesson.videos) {
+        lesson.videos.forEach(video => {
+          if (video.questions) {
+            totalProblems += video.questions.length;
+          }
+        });
+      }
+      problemCounts[lesson.id.toString()] = totalProblems;
+    });
+    
+    // Calculate lesson completions
+    const lessonCompletions = {};
+    lessons.forEach(lesson => {
+      const lessonId = lesson.id.toString();
+      const lessonProgress = user.progress.find(p => p.lessonId === lessonId);
+      const total = problemCounts[lessonId] || 0;
+      const answered = lessonProgress ? lessonProgress.userAnswers.length : 0;
+      
+      lessonCompletions[lessonId] = {
+        completed: answered === total && total > 0,
+        total,
+        answered
+      };
+    });
+    
+    res.json({
+      lessonCompletions
+    });
+  } catch (error) {
+    console.error('Error fetching completion status:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

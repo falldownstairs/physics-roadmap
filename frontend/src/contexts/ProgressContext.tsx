@@ -65,15 +65,6 @@ export function ProgressProvider({ children, courseName }: { children: React.Rea
         const total = totalProblems[lessonId] || 0;
         const answered = progress?.userAnswers?.length || 0;
         
-        // Debug logging
-        if (answered > 0 || total > 0) {
-          console.log(`Lesson ${lessonId} (${node.title}):`, {
-            answered,
-            total,
-            completed: answered >= total && total > 0
-          });
-        }
-        
         lessons[lessonId] = answered >= total && total > 0;
       }
     });
@@ -91,19 +82,28 @@ export function ProgressProvider({ children, courseName }: { children: React.Rea
     courseData.forEach(node => {
       if (node.type === 'topic') {
         const topicId = node.id.toString();
-        const childIds = tree.get(node.id) || [];
         
-        // Get all descendant lessons
-        const getDescendantLessons = (nodeId: number): number[] => {
+        // Get ALL descendant lessons (not just direct children)
+        const getDescendantLessons = (nodeId: number, visited = new Set<number>()): number[] => {
+          // Prevent infinite loops in case of circular dependencies
+          if (visited.has(nodeId)) return [];
+          visited.add(nodeId);
+          
           const children = tree.get(nodeId) || [];
           let lessonIds: number[] = [];
           
           children.forEach(childId => {
             const childNode = courseData.find(n => n.id === childId);
-            if (childNode?.type === 'lesson') {
+            if (!childNode) return;
+            
+            if (childNode.type === 'lesson') {
               lessonIds.push(childId);
-            } else if (childNode?.type === 'topic') {
-              lessonIds.push(...getDescendantLessons(childId));
+              // IMPORTANT: Also check if this lesson has its own children
+              const grandChildren = getDescendantLessons(childId, visited);
+              lessonIds.push(...grandChildren);
+            } else if (childNode.type === 'topic') {
+              // Recursively get all lessons under this child topic
+              lessonIds.push(...getDescendantLessons(childId, visited));
             }
           });
           
@@ -111,8 +111,10 @@ export function ProgressProvider({ children, courseName }: { children: React.Rea
         };
         
         const lessonIds = getDescendantLessons(node.id);
-        const total = lessonIds.length;
-        const completedCount = lessonIds.filter(id => lessons[id.toString()]).length;
+        // Remove duplicates
+        const uniqueLessonIds = [...new Set(lessonIds)];
+        const total = uniqueLessonIds.length;
+        const completedCount = uniqueLessonIds.filter(id => lessons[id.toString()]).length;
         
         topics[topicId] = {
           completed: completedCount === total && total > 0,

@@ -32,7 +32,7 @@ export default function QuestionImage({ src, alt, className = '' }: QuestionImag
 
   if (loadError) {
     return (
-      <div className={`bg-red-50 border-2 border-red-200 rounded-lg p-4 ${className}`}>
+      <div className={`bg-red-50 border-2 border-red-200 p-4 ${className}`}>
         <p className="text-red-600 text-sm font-medium">Failed to load image</p>
         <p className="text-red-500 text-xs mt-1 font-mono break-all">{src}</p>
       </div>
@@ -42,14 +42,14 @@ export default function QuestionImage({ src, alt, className = '' }: QuestionImag
   return (
     <div className={`relative ${className}`}>
       {isLoading && (
-        <div className="absolute inset-0 bg-slate-100 animate-pulse rounded-lg" />
+        <div className="absolute inset-0 bg-slate-100 animate-pulse" />
       )}
       <img
         src={src}
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
-        className={`rounded-lg transition-opacity duration-200 ${
+        className={`transition-opacity duration-200 ${
           isLoading ? 'opacity-0' : 'opacity-100'
         }`}
       />

@@ -41,18 +41,26 @@ export default function Navbar() {
           
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              {user?.profilePicture && (
-                <button 
-                  onClick={() => setIsSignOutModalOpen(true)}
-                  className="w-9 h-9 rounded-full overflow-hidden hover:ring-2 hover:ring-slate-300 transition-all duration-200"
-                >
+              <button 
+                onClick={() => setIsSignOutModalOpen(true)}
+                className="w-9 h-9 rounded-full overflow-hidden hover:ring-2 hover:ring-slate-300 transition-all duration-200 flex items-center justify-center bg-slate-200"
+              >
+                {user?.profilePicture ? (
                   <img 
                     src={user.profilePicture} 
                     alt={user.displayName || "User"} 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // If image fails to load, show initials instead
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                    }}
                   />
-                </button>
-              )}
+                ) : null}
+                <span className={`text-sm font-semibold text-slate-600 ${user?.profilePicture ? 'hidden' : ''}`}>
+                  {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
+                </span>
+              </button>
             </div>
           ) : (
             <button 

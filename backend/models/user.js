@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   profilePicture: String,
+  profilePictureUpdatedAt: {
+    type: Date,
+    default: Date.now
+  },
   progress: [progressSchema],
   createdAt: {
     type: Date,

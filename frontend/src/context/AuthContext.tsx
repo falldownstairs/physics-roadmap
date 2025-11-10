@@ -49,9 +49,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.log('User data received:', data);
         
         if (data.isAuthenticated && data.user) {
-          setUser(data.user);
+          // Validate profile picture URL
+          const userData = data.user;
+          
+          // Check if profile picture is accessible
+          if (userData.profilePicture) {
+            try {
+              const imgResponse = await fetch(userData.profilePicture, { method: 'HEAD' });
+              if (!imgResponse.ok) {
+                console.warn('Profile picture URL is stale, clearing it');
+                userData.profilePicture = undefined;
+              }
+            } catch (err) {
+              console.warn('Failed to validate profile picture, clearing it');
+              userData.profilePicture = undefined;
+            }
+          }
+          
+          setUser(userData);
           // Persist user data to localStorage
-          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('user', JSON.stringify(userData));
         } else {
           setUser(null);
           localStorage.removeItem('user');
@@ -67,8 +84,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const cachedUser = localStorage.getItem('user');
       if (cachedUser) {
         try {
-          setUser(JSON.parse(cachedUser));
-          console.log('Restored user from cache');
+          const userData = JSON.parse(cachedUser);
+          // Don't use cached profile picture URL as it may be expired
+          userData.profilePicture = undefined;
+          setUser(userData);
+          console.log('Restored user from cache (without profile picture)');
         } catch {
           localStorage.removeItem('user');
           setUser(null);

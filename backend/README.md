@@ -22,7 +22,7 @@ This backend uses a hybrid approach:
 ├── services/
 │   └── dataService.js       # In-memory data management for courses/lessons
 ├── utils/
-│   └── authUtils.js         # JWT token utilities
+│   └── dependencyTree.js    # Course dependency tree utilities
 ├── app.js                   # Main application file
 └── package.json             # Dependencies and scripts
 ```
@@ -37,8 +37,8 @@ This backend uses a hybrid approach:
 
 ### MongoDB User Authentication
 - User data persists in MongoDB
-- Google OAuth integration
-- JWT token-based sessions
+- Google OAuth integration via Passport
+- Session-based authentication with connect-mongo
 
 ## Scripts
 

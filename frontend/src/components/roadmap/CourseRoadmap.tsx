@@ -206,10 +206,8 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   }, [handleWheelDirect]); // ✅ Only recreates when handler changes
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
   }, []);
 
   return (

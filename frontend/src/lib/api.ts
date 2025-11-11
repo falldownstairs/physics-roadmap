@@ -1,5 +1,7 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+
 export async function fetchLesson(lessonId: string, courseName: string): Promise<any> {
-  const response = await fetch(`http://localhost:3002/api/${courseName}/${lessonId}`);
+  const response = await fetch(`${API_URL}/api/${courseName}/${lessonId}`);
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -17,13 +19,13 @@ export async function fetchLesson(lessonId: string, courseName: string): Promise
         if (question.image?.src) {
           processedQuestion.image = {
             ...question.image,
-            src: `http://localhost:3002${question.image.src}`
+            src: `${API_URL}${question.image.src}`
           };
         }
         
         if (question.optionImages) {
           processedQuestion.optionImages = question.optionImages.map((img: any) =>
-            img ? { ...img, src: `http://localhost:3002${img.src}` } : null
+            img ? { ...img, src: `${API_URL}${img.src}` } : null
           );
         }
         

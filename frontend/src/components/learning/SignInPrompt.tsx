@@ -1,10 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
 export default function SignInPrompt() {
-  const router = useRouter();
-
   return (
     <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-lg p-4 mb-6 shadow-sm relative z-10">
       <div className="flex items-start gap-3">

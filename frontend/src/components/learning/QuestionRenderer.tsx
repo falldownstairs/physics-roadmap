@@ -15,22 +15,16 @@ interface QuestionRendererProps {
 }
 
 function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCorrect, isCompleted }: QuestionRendererProps) {
-  // Render question text with LaTeX support
-  const QuestionText = memo(() => (
-    <div className="mb-4">
-      <LatexRenderer 
-        content={question.question}
-        className="text-lg font-medium text-slate-800"
-      />
-    </div>
-  ));
-  QuestionText.displayName = 'QuestionText';
-
   switch (question.type) {
     case 'multiple-choice':
       return (
         <>
-          <QuestionText />
+          <div className="mb-4">
+            <LatexRenderer 
+              content={question.question}
+              className="text-lg font-medium text-slate-800"
+            />
+          </div>
           <MultipleChoiceQuestion 
             question={question} 
             onSubmit={onSubmit} 
@@ -44,7 +38,12 @@ function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCor
     case 'math-input':
       return (
         <>
-          <QuestionText />
+          <div className="mb-4">
+            <LatexRenderer 
+              content={question.question}
+              className="text-lg font-medium text-slate-800"
+            />
+          </div>
           <MathInputQuestion 
             question={question} 
             onSubmit={onSubmit} 
@@ -58,7 +57,12 @@ function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCor
     case 'word-question':
       return (
         <>
-          <QuestionText />
+          <div className="mb-4">
+            <LatexRenderer 
+              content={question.question}
+              className="text-lg font-medium text-slate-800"
+            />
+          </div>
           <WordQuestion 
             question={question} 
             onSubmit={onSubmit} 

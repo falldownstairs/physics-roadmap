@@ -2,7 +2,7 @@ import CourseRoadmap from '@/components/roadmap/CourseRoadmap'
 import { courseData, connections } from '@/lib/mechanicsContent';
 export default function RoadmapPage() {
   return (
-    <div className='w-screen h-screen bg-black'>
+    <div className='w-full h-[calc(100vh-57px)] bg-black overflow-hidden'>
       <CourseRoadmap 
         courseData={courseData} 
         connections={connections} 

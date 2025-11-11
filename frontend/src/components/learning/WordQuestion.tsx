@@ -25,7 +25,7 @@ export default function WordQuestion({ question, onSubmit, disabled, submittedAn
     setExplanation('');
 
     try {
-      const response = await fetch('http://localhost:3002/api/validation/validate-answer', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}/api/validation/validate-answer`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

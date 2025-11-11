@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Lesson, UserAnswer, ModuleProgress } from '../../lib/types';
 import { fetchProgress, saveProgress } from '../../lib/progressApi';
-import { useAuth } from '../../context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
+import Link from 'next/link';
 import VideoPlayer from './VideoPlayer';
 import QuestionRenderer from './QuestionRenderer';
 import ExplanationDisplay from './ExplanationDisplay';
@@ -23,7 +23,6 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const { isAuthenticated: isUserAuthenticated, loading: authLoading } = useAuth();
   const hasLoadedProgress = useRef(false);
-  const router = useRouter();
   
   // Load progress only from API for authenticated users
   useEffect(() => {
@@ -161,15 +160,15 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
       }`}>
         <div className={`max-w-5xl mx-auto px-6 transition-all duration-300 pt-4 pb-4`}>
           {/* Return to Roadmap Button */}
-          <button
-            onClick={() => router.push(`/mechanics`)}
+          <Link
+            href="/mechanics"
             className="mb-3 flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Return to Roadmap
-          </button>
+          </Link>
 
           <div className={`transition-all duration-300 ${
             isScrolled ? 'mb-3' : 'mb-4'

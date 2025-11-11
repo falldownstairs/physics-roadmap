@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import SignInModal from "./SignInModal";
 import SignOutModal from "./SignOutModal";
 
@@ -14,9 +14,9 @@ export default function Navbar() {
   const { user, isAuthenticated} = useAuth();
 
   const links = [
-    { href: "/", label: "Home", id: crypto.randomUUID()},
-    { href: "/mechanics", label: "Mechanics", id: crypto.randomUUID()},
-    { href: "/electricity-magnetism", label: "Electricity & Magnetism", id: crypto.randomUUID()},
+    { href: "/", label: "Home" },
+    { href: "/mechanics", label: "Mechanics" },
+    { href: "/electricity-magnetism", label: "Electricity & Magnetism" },
   ];
 
   return (
@@ -26,7 +26,7 @@ export default function Navbar() {
           <div className="flex gap-2">
             {links.map((link) => (
               <Link
-                key={link.id}
+                key={link.href}
                 href={link.href}
                 className={`font-bold mx-0.5 px-3 py-1 rounded-full transition-all duration-200 ${
                   pathname === link.href

@@ -1,3 +1,5 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+
 export interface ValidationResult {
   isCorrect: boolean;
   feedback: string;
@@ -24,7 +26,7 @@ export async function validateWordAnswer(
   question: string,
   correctAnswer: string
 ): Promise<ValidationResult> {
-  const response = await fetch('http://localhost:3002/api/validate-answer', {
+  const response = await fetch(`${API_URL}/api/validate-answer`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,7 +57,7 @@ export async function validateWordAnswer(
  * Gets the current usage statistics for the authenticated user
  */
 export async function getValidationUsage(): Promise<UsageStats> {
-  const response = await fetch('http://localhost:3002/api/validate-answer/usage', {
+  const response = await fetch(`${API_URL}/api/validate-answer/usage`, {
     credentials: 'include'
   });
 

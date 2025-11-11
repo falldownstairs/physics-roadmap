@@ -25,7 +25,7 @@ const PORT = 3002;
 
 async function connectToDatabase() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('📚 Connected to MongoDB for user authentication');
     return true;
   } catch (error) {
@@ -49,7 +49,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
+    mongoUrl: process.env.MONGODB_URI,
     touchAfter: 24 * 3600 // lazy session update
   }),
   cookie: {
@@ -64,20 +64,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Simplified logging middleware (only log on auth routes)
-app.use('/api/auth', (req, res, next) => {
-  console.log(`[AUTH] ${req.method} ${req.path}`);
-  console.log('[AUTH] SessionID:', req.sessionID);
-  console.log('[AUTH] Authenticated:', req.isAuthenticated());
+// Consolidated logging middleware for API routes
+const apiLogger = (routeName) => (req, res, next) => {
+  console.log(`[${routeName}] ${req.method} ${req.path}`);
+  console.log(`[${routeName}] SessionID:`, req.sessionID);
+  console.log(`[${routeName}] Authenticated:`, req.isAuthenticated());
   next();
-});
+};
 
-app.use('/api/progress', (req, res, next) => {
-  console.log(`[PROGRESS] ${req.method} ${req.path}`);
-  console.log('[PROGRESS] SessionID:', req.sessionID);
-  console.log('[PROGRESS] Authenticated:', req.isAuthenticated());
-  next();
-});
+app.use('/api/auth', apiLogger('AUTH'));
+app.use('/api/progress', apiLogger('PROGRESS'));
 
 // Initialize in-memory data
 dataService.initializeData();

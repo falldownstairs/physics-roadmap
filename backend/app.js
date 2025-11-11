@@ -58,27 +58,8 @@ async function connectToDatabase() {
 }
 
 // CORS must come BEFORE session
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://localhost:3000',
-  'http://www.physicsroadmap.com',
-  'https://www.physicsroadmap.com',
-  'http://physicsroadmap.com',
-  'https://physicsroadmap.com'
-];
-
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('❌ CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: 'https://www.physicsroadmap.com', // Your frontend URL
   credentials: true, // Important for cookies/sessions
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -96,9 +77,9 @@ app.use(session({
   }),
   cookie: {
     maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
-    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in development
+    secure: false, // Set to false for localhost
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // 'none' for cross-site in production
+    sameSite: 'lax' // Important for cross-origin cookies
   }
 }));
 

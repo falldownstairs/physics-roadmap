@@ -68,7 +68,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Session configuration - AFTER CORS
+// Trust Vercel proxy so secure cookies are sent
+app.set('trust proxy', 1);
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-session-secret',
   resave: false,

@@ -75,15 +75,23 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI,
-    touchAfter: 24 * 3600 // lazy session update
+    touchAfter: 24 * 3600
   }),
   cookie: {
-    maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
-    secure: false, // Set to false for localhost
+    maxAge: 14 * 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: 'lax' // Important for cross-origin cookies
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   }
 }));
+
+app.use((req, res, next) => {
+  console.log('🔎 Incoming Origin:', req.headers.origin);
+  console.log('🍪 Cookie header:', req.headers.cookie || '(none)');
+  console.log('🆔 Session ID:', req.sessionID);
+  console.log('📦 Session loaded:', !!req.session);
+  next();
+});
 
 // Initialize passport with session support
 app.use(passport.initialize());

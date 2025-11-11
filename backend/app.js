@@ -6,6 +6,8 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const path = require('path');
 
+
+//this is a new comment
 require('dotenv').config();
 require('./config/passport'); // Import passport configuration
 

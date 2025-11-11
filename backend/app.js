@@ -34,7 +34,7 @@ async function connectToDatabase() {
     console.log('   Vercel:', process.env.VERCEL || 'false');
     
     await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      serverSelectionTimeoutMS: 20000, // increased from 5000
       socketTimeoutMS: 45000,
     });
     
@@ -47,15 +47,17 @@ async function connectToDatabase() {
     console.error('   Error name:', error.name);
     console.error('   Error message:', error.message);
     console.error('   Error code:', error.code);
-    
-    // Log more details if it's a connection error
     if (error.reason) {
       console.error('   Reason:', error.reason);
     }
-    
     return false;
   }
 }
+
+// Immediately connect before middleware/routes to avoid buffering
+(async () => {
+  await connectToDatabase();
+})();
 
 // CORS must come BEFORE session
 app.use(cors({
@@ -272,7 +274,7 @@ app.get('/api/:courseName/:lessonId', async (req, res) => {
 
 
 app.listen(PORT, async () => {
-  await connectToDatabase();
+  // await connectToDatabase(); // removed (already connected above)
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📁 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log('📍 Available endpoints:');

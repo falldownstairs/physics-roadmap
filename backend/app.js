@@ -25,11 +25,32 @@ const PORT = 3002;
 
 async function connectToDatabase() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('📚 Connected to MongoDB for user authentication');
+    console.log('🔄 Attempting to connect to MongoDB...');
+    console.log('   URI exists:', !!process.env.MONGODB_URI);
+    console.log('   URI length:', process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
+    console.log('   Environment:', process.env.NODE_ENV || 'development');
+    console.log('   Vercel:', process.env.VERCEL || 'false');
+    
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000,
+    });
+    
+    console.log('✅ Connected to MongoDB for user authentication');
+    console.log('   Host:', mongoose.connection.host);
+    console.log('   Database:', mongoose.connection.name);
     return true;
   } catch (error) {
-    console.warn('⚠️  MongoDB connection failed - Running without authentication:', error.message);
+    console.error('❌ MongoDB connection failed - Running without authentication');
+    console.error('   Error name:', error.name);
+    console.error('   Error message:', error.message);
+    console.error('   Error code:', error.code);
+    
+    // Log more details if it's a connection error
+    if (error.reason) {
+      console.error('   Reason:', error.reason);
+    }
+    
     return false;
   }
 }
@@ -98,14 +119,103 @@ app.use('/api/validation', validationRoutes);
 
 app.get('/api/health', async (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;
+  
+  // Detailed MongoDB connection info
+  const connectionInfo = {
+    connected: dbConnected,
+    state: mongoose.STATES[mongoose.connection.readyState],
+    readyState: mongoose.connection.readyState, // 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+    host: mongoose.connection.host || 'N/A',
+    port: mongoose.connection.port || 'N/A',
+    name: mongoose.connection.name || 'N/A',
+  };
+  
+  // Add error information if available
+  if (mongoose.connection._connectionError) {
+    connectionInfo.error = mongoose.connection._connectionError.message;
+  }
+  
+  // Environment check
+  const envCheck = {
+    MONGODB_URI_exists: !!process.env.MONGODB_URI,
+    MONGODB_URI_length: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
+    MONGODB_URI_starts_with: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'N/A',
+    SESSION_SECRET_exists: !!process.env.SESSION_SECRET,
+    NODE_ENV: process.env.NODE_ENV || 'not set',
+    VERCEL: process.env.VERCEL || 'not on vercel',
+    VERCEL_ENV: process.env.VERCEL_ENV || 'N/A'
+  };
+  
   res.json({
     status: 'Server is running!',
     timestamp: new Date().toISOString(),
-    database: {
-      connected: dbConnected,
-      state: mongoose.STATES[mongoose.connection.readyState]
+    environment: envCheck,
+    database: connectionInfo,
+    mongoose: {
+      version: mongoose.version,
+      connections: mongoose.connections.length
     }
   });
+});
+
+// Debug endpoint to test MongoDB connection on demand
+app.get('/api/debug/mongodb', async (req, res) => {
+  const results = {
+    timestamp: new Date().toISOString(),
+    environment: {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      VERCEL: process.env.VERCEL || 'false',
+      VERCEL_ENV: process.env.VERCEL_ENV || 'N/A',
+      MONGODB_URI_configured: !!process.env.MONGODB_URI,
+      MONGODB_URI_format: process.env.MONGODB_URI ? 
+        (process.env.MONGODB_URI.startsWith('mongodb+srv://') ? 'mongodb+srv (Atlas)' : 
+         process.env.MONGODB_URI.startsWith('mongodb://') ? 'mongodb (standard)' : 'unknown') : 'N/A'
+    },
+    currentConnection: {
+      readyState: mongoose.connection.readyState,
+      readyStateString: mongoose.STATES[mongoose.connection.readyState],
+      host: mongoose.connection.host || 'N/A',
+      port: mongoose.connection.port || 'N/A',
+      name: mongoose.connection.name || 'N/A',
+    },
+    testResults: {}
+  };
+
+  // Test connection if not connected
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      results.testResults.status = 'attempting_connection';
+      results.testResults.message = 'Attempting to connect to MongoDB...';
+      
+      await mongoose.connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
+      
+      results.testResults.status = 'success';
+      results.testResults.message = 'Successfully connected to MongoDB';
+      results.currentConnection = {
+        readyState: mongoose.connection.readyState,
+        readyStateString: mongoose.STATES[mongoose.connection.readyState],
+        host: mongoose.connection.host,
+        port: mongoose.connection.port,
+        name: mongoose.connection.name,
+      };
+    } catch (error) {
+      results.testResults.status = 'failed';
+      results.testResults.error = {
+        name: error.name,
+        message: error.message,
+        code: error.code,
+        reason: error.reason?.toString() || 'N/A'
+      };
+    }
+  } else {
+    results.testResults.status = 'already_connected';
+    results.testResults.message = 'MongoDB is already connected';
+  }
+
+  res.json(results);
 });
 
 // Get all courses
@@ -180,6 +290,8 @@ app.listen(PORT, async () => {
   console.log('   - POST /api/validation/validate-answer');
   console.log('   Admin:');
   console.log('   - GET /api/users');
+  console.log('   Debug:');
+  console.log('   - GET /api/debug/mongodb');
   console.log('');
   console.log('📚 Content stored in file-based system');
   console.log('👥 Users stored in MongoDB');

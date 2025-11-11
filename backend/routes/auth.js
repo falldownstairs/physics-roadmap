@@ -12,7 +12,7 @@ router.get('/google',
 
 router.get('/google/callback',
   passport.authenticate('google', { 
-    failureRedirect: 'http://localhost:3000',
+    failureRedirect: process.env.FRONTEND_URL || 'http://localhost:3000',
     session: true
   }),
   (req, res) => {
@@ -23,11 +23,11 @@ router.get('/google/callback',
     req.session.save((err) => {
       if (err) {
         console.error('Session save error:', err);
-        return res.redirect('http://localhost:3000');
+        return res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
       }
       
       // Redirect back to frontend
-      res.redirect('http://localhost:3000');
+      res.redirect(process.env.FRONTEND_URL || 'http://localhost:3000');
     });
   }
 );

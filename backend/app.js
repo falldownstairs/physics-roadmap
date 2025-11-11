@@ -58,8 +58,25 @@ async function connectToDatabase() {
 }
 
 // CORS must come BEFORE session
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://www.physicsroadmap.com',
+  'https://physicsroadmap.com',
+  process.env.FRONTEND_URL
+].filter(Boolean); // Remove any undefined values
+
 app.use(cors({
-  origin: 'http://localhost:3000', // Your frontend URL
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Important for cookies/sessions
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -77,9 +94,10 @@ app.use(session({
   }),
   cookie: {
     maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in milliseconds
-    secure: false, // Set to false for localhost
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
     httpOnly: true,
-    sameSite: 'lax' // Important for cross-origin cookies
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' required for cross-site cookies in production
+    domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined // Allow cookies across vercel subdomains
   }
 }));
 

@@ -17,7 +17,7 @@ export default function AboutPage() {
               All lesson videos are created by <span className="font-medium text-blue-700">LasseViren1</span>.
             </p>
             <p className="text-slate-700">
-              Explore more of his work his{' '}
+              Explore more of his work on his{' '}
               <Link
                 href="https://sites.google.com/view/ap-physics-lectures-virens-vid/home"
                 target="_blank"

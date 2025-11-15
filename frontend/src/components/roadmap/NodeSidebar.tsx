@@ -64,6 +64,7 @@ export default function NodeSidebar({ selectedNode, courseName }: NodeSidebarPro
 
   const isLesson = selectedNode.type === 'lesson';
   const isTopic = selectedNode.type === 'topic';
+  const videoSectionTitle = isLesson ? 'Lesson Videos' : 'Review Videos';
 
   const handleVideoClick = (videoId: string) => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank', 'noopener,noreferrer');
@@ -99,9 +100,9 @@ export default function NodeSidebar({ selectedNode, courseName }: NodeSidebarPro
           </p>
         </div>
 
-        {/* Review Videos (for all node types) */}
+        {/* Video resources */}
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">Review Videos</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">{videoSectionTitle}</h3>
           {selectedNode.videos.length > 0 ? (
             <div className="space-y-1.5">
               {selectedNode.videos.map((video, index) => (

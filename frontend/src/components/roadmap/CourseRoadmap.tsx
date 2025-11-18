@@ -173,7 +173,7 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
       const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
       const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
       
-      const delta = (distance - lastTouchDistance) * 0.01;
+      const delta = (distance - lastTouchDistance) * 0.005; // Reduced from 0.01 to 0.005
       const newScale = Math.min(Math.max(0.1, scale + delta), 2);
       
       const pointX = (cx - position.x) / scale;
@@ -195,7 +195,7 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   };
 
   // Resize handlers
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsResizing(true);
@@ -205,22 +205,25 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   useEffect(() => {
     if (!isResizing) return;
 
-    const handleResizeMove = (e: MouseEvent) => {
+    const handleResizeMove = (e: MouseEvent | TouchEvent) => {
       if (!parentRef.current) return;
+      
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       
       if (isMobile) {
         // Vertical resize for mobile
         const parentHeight = parentRef.current.offsetHeight;
-        const mouseY = e.clientY - parentRef.current.getBoundingClientRect().top;
+        const mouseY = clientY - parentRef.current.getBoundingClientRect().top;
         const newSidebarHeight = ((parentHeight - mouseY) / parentHeight) * 100;
         
-        // Constrain between 40% and 80%
+        // Constrain between 40% and 85%
         const constrainedHeight = Math.min(Math.max(newSidebarHeight, 40), 85);
         setSidebarHeight(constrainedHeight);
       } else {
         // Horizontal resize for desktop
         const parentWidth = parentRef.current.offsetWidth;
-        const mouseX = e.clientX - parentRef.current.getBoundingClientRect().left;
+        const mouseX = clientX - parentRef.current.getBoundingClientRect().left;
         const newSidebarWidth = ((parentWidth - mouseX) / parentWidth) * 100;
         
         // Constrain between 15% and 50%
@@ -235,12 +238,16 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
 
     document.addEventListener('mousemove', handleResizeMove);
     document.addEventListener('mouseup', handleResizeEnd);
+    document.addEventListener('touchmove', handleResizeMove);
+    document.addEventListener('touchend', handleResizeEnd);
     document.body.style.cursor = isMobile ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
 
     return () => {
       document.removeEventListener('mousemove', handleResizeMove);
       document.removeEventListener('mouseup', handleResizeEnd);
+      document.removeEventListener('touchmove', handleResizeMove);
+      document.removeEventListener('touchend', handleResizeEnd);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
@@ -405,6 +412,7 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
         <div
           className={`${isMobile ? 'h-2 cursor-row-resize w-full' : 'w-2 cursor-col-resize h-full'} relative z-20 flex-shrink-0`}
           onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
           style={{ 
             touchAction: 'none',
             backgroundColor: 'transparent'

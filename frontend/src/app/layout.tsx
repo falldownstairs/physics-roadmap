@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import '../styles/mathquill-custom.css';
 import { MathJaxContext } from 'better-react-mathjax';
+import { Analytics } from '@vercel/analytics/next';
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <main className="bg-gray-50">{children}</main>
           </MathJaxContext>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );

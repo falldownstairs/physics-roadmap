@@ -242,18 +242,6 @@ app.get('/api/courses', async (req, res) => {
   }
 });
 
-// Get all registered users (for admin/tracking purposes)
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await User.find().select('-googleId'); // Exclude sensitive googleId
-    res.json({
-      total: users.length,
-      users: users
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
 
 // Get lesson through course
 app.get('/api/:courseName/:lessonId', async (req, res) => {
@@ -302,8 +290,6 @@ app.listen(PORT, async () => {
   console.log('   - GET /api/course/:courseName/problems');
   console.log('   Validation:');
   console.log('   - POST /api/validation/validate-answer');
-  console.log('   Admin:');
-  console.log('   - GET /api/users');
   console.log('   Debug:');
   console.log('   - GET /api/debug/mongodb');
   console.log('');

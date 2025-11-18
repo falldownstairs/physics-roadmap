@@ -57,6 +57,11 @@ export default function Node({title, id, type, x, y, onClick}: NodeProps){
     onClick(id);
   };
 
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    onClick(id);
+  };
+
   return(
     <div
       key={id}
@@ -67,6 +72,7 @@ export default function Node({title, id, type, x, y, onClick}: NodeProps){
         zIndex: 2
       }}
       onClick={handleClick}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="flex items-center justify-between px-4 pt-2 pb-4.5 h-full">
         <div className="flex-1 min-w-0">

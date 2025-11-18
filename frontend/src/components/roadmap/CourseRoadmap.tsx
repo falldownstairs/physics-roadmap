@@ -41,11 +41,15 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   const [scale, setScale] = useState(REFERENCE_SCALE);
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(20);
+  const [sidebarHeight, setSidebarHeight] = useState(70);
   const [isResizing, setIsResizing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const parentRef = useRef<HTMLDivElement | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isFadedIn, setIsFadedIn] = useState(false);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
   
   // ✅ PERFORMANCE FIX: Memoize expensive calculations
   const maxX = useMemo(() => Math.max(...courseData.map(node => node.x)) + 200, [courseData]);
@@ -55,8 +59,11 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   useEffect(() => {
     setIsHydrated(true);
     
-    const viewportWidth = window.innerWidth * 0.8;
-    const viewportHeight = window.innerHeight;
+    const checkMobile = window.innerWidth < 640;
+    setIsMobile(checkMobile);
+    
+    const viewportWidth = checkMobile ? window.innerWidth : window.innerWidth * 0.8;
+    const viewportHeight = checkMobile ? window.innerHeight * 0.4 : window.innerHeight;
 
     const widthRatio = viewportWidth / REFERENCE_WIDTH;
     const heightRatio = viewportHeight / REFERENCE_HEIGHT;
@@ -75,6 +82,15 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
     setTimeout(() => {
       setIsFadedIn(true);
     }, 100);
+
+    // Handle resize
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth < 640;
+      setIsMobile(newIsMobile);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleNodeClick = useCallback((nodeId: number) => {
@@ -108,6 +124,76 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
     setIsDragging(false);
   };
 
+  // Touch handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (isResizing) return;
+    
+    if (e.touches.length === 1) {
+      // Single touch - start panning
+      setTouchStart({
+        x: e.touches[0].clientX - position.x,
+        y: e.touches[0].clientY - position.y
+      });
+    } else if (e.touches.length === 2) {
+      // Two touches - prepare for pinch zoom
+      const distance = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setLastTouchDistance(distance);
+      setTouchStart(null); // Cancel panning
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (isResizing) return;
+    
+    if (e.touches.length === 1 && touchStart) {
+      // Single touch - pan
+      e.preventDefault();
+      requestAnimationFrame(() => {
+        setPosition({
+          x: e.touches[0].clientX - touchStart.x,
+          y: e.touches[0].clientY - touchStart.y
+        });
+      });
+    } else if (e.touches.length === 2 && lastTouchDistance) {
+      // Two touches - pinch zoom
+      e.preventDefault();
+      
+      const distance = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      
+      // Center point between two touches
+      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+      
+      const delta = (distance - lastTouchDistance) * 0.01;
+      const newScale = Math.min(Math.max(0.1, scale + delta), 2);
+      
+      const pointX = (cx - position.x) / scale;
+      const pointY = (cy - position.y) / scale;
+      
+      setPosition({
+        x: cx - pointX * newScale,
+        y: cy - pointY * newScale
+      });
+      
+      setScale(newScale);
+      setLastTouchDistance(distance);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStart(null);
+    setLastTouchDistance(null);
+  };
+
   // Resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -122,13 +208,25 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
     const handleResizeMove = (e: MouseEvent) => {
       if (!parentRef.current) return;
       
-      const parentWidth = parentRef.current.offsetWidth;
-      const mouseX = e.clientX - parentRef.current.getBoundingClientRect().left;
-      const newSidebarWidth = ((parentWidth - mouseX) / parentWidth) * 100;
-      
-      // Constrain between 15% and 50%
-      const constrainedWidth = Math.min(Math.max(newSidebarWidth, 15), 50);
-      setSidebarWidth(constrainedWidth);
+      if (isMobile) {
+        // Vertical resize for mobile
+        const parentHeight = parentRef.current.offsetHeight;
+        const mouseY = e.clientY - parentRef.current.getBoundingClientRect().top;
+        const newSidebarHeight = ((parentHeight - mouseY) / parentHeight) * 100;
+        
+        // Constrain between 40% and 80%
+        const constrainedHeight = Math.min(Math.max(newSidebarHeight, 40), 85);
+        setSidebarHeight(constrainedHeight);
+      } else {
+        // Horizontal resize for desktop
+        const parentWidth = parentRef.current.offsetWidth;
+        const mouseX = e.clientX - parentRef.current.getBoundingClientRect().left;
+        const newSidebarWidth = ((parentWidth - mouseX) / parentWidth) * 100;
+        
+        // Constrain between 15% and 50%
+        const constrainedWidth = Math.min(Math.max(newSidebarWidth, 15), 50);
+        setSidebarWidth(constrainedWidth);
+      }
     };
 
     const handleResizeEnd = () => {
@@ -137,7 +235,7 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
 
     document.addEventListener('mousemove', handleResizeMove);
     document.addEventListener('mouseup', handleResizeEnd);
-    document.body.style.cursor = 'col-resize';
+    document.body.style.cursor = isMobile ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
 
     return () => {
@@ -146,7 +244,7 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-  }, [isResizing]);
+  }, [isResizing, isMobile]);
 
   // ✅ PERFORMANCE FIX: Memoize path creation function
   const createCurvedPath = useCallback((from: number, to: number, offset: number) => {
@@ -212,19 +310,22 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
 
   return (
     <ProgressProvider courseName={courseName}>
-      <div ref={parentRef} className="w-full h-full bg-[#c7d8ea] relative flex">
-        {/* Roadmap Container - dynamic width */}
+      <div ref={parentRef} className={`w-full h-full bg-[#c7d8ea] relative ${isMobile ? 'flex-col' : 'flex'}`}>
+        {/* Roadmap Container - dynamic width/height */}
         <div 
-          className="h-full relative z-0"
-          style={{ width: `${100 - sidebarWidth}%` }}
+          className="relative z-0"
+          style={isMobile ? { height: `${100 - sidebarHeight}%` } : { width: `${100 - sidebarWidth}%` }}
         >
           <div
             ref={containerRef}
-            className={`w-full h-full ${isResizing ? 'pointer-events-none' : 'cursor-move'}`}
+            className={`w-full h-full ${isResizing ? 'pointer-events-none' : 'cursor-move'} touch-none`}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             <div
               className={`relative transition-opacity duration-700 ${
@@ -300,24 +401,24 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
           </div>
         </div>
 
-        {/* Invisible Resize Handle */}
+        {/* Resize Handle */}
         <div
-          className="w-2 cursor-col-resize relative z-20 flex-shrink-0"
+          className={`${isMobile ? 'h-2 cursor-row-resize w-full' : 'w-2 cursor-col-resize h-full'} relative z-20 flex-shrink-0`}
           onMouseDown={handleResizeStart}
           style={{ 
             touchAction: 'none',
             backgroundColor: 'transparent'
           }}
         >
-          <div className="absolute inset-y-0 -left-2 -right-2" />
+          <div className={isMobile ? 'absolute inset-x-0 -top-2 -bottom-2' : 'absolute inset-y-0 -left-2 -right-2'} />
         </div>
 
-        {/* Sidebar - dynamic width */}
+        {/* Sidebar - dynamic width/height */}
         <div 
           className="relative z-10 flex-shrink-0"
-          style={{ width: `calc(${sidebarWidth}% - 8px)` }}
+          style={isMobile ? { height: `calc(${sidebarHeight}% - 8px)` } : { width: `calc(${sidebarWidth}% - 8px)` }}
         >
-          <NodeSidebar selectedNode={selectedNode} courseName={courseName} />
+          <NodeSidebar selectedNode={selectedNode} courseName={courseName} isMobile={isMobile} />
         </div>
       </div>
     </ProgressProvider>

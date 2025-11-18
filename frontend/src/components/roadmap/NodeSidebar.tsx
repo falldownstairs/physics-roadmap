@@ -21,9 +21,10 @@ interface NodeData {
 interface NodeSidebarProps {
   selectedNode: NodeData | null;
   courseName: string;
+  isMobile?: boolean;
 }
 
-export default function NodeSidebar({ selectedNode, courseName }: NodeSidebarProps) {
+export default function NodeSidebar({ selectedNode, courseName, isMobile = false }: NodeSidebarProps) {
   const { progressData, totalProblems, completionStatus, isLoading } = useProgress();
   
   // Calculate progress percentage for the selected node
@@ -56,7 +57,7 @@ export default function NodeSidebar({ selectedNode, courseName }: NodeSidebarPro
 
   if (!selectedNode) {
     return (
-      <div className="w-full h-screen bg-white border-6 border-gray-200 shadow-lg p-6 flex items-center justify-center text-gray-500 box-border">
+      <div className={`w-full ${isMobile ? 'h-full' : 'h-screen'} bg-white border-6 border-gray-200 shadow-lg p-6 flex items-center justify-center text-gray-500 box-border`}>
         Select a node
       </div>
     );
@@ -71,7 +72,7 @@ export default function NodeSidebar({ selectedNode, courseName }: NodeSidebarPro
   };
 
   return (
-    <div className="w-full h-screen bg-white border-6 border-blue-100 pr-2 pl-4 pt-5 pb-5  box-border">
+    <div className={`w-full ${isMobile ? 'h-full' : 'h-screen'} bg-white border-6 border-blue-100 pr-2 pl-4 pt-5 pb-5 box-border`}>
       {/* Scrollable content area that includes everything */}
       <div className="h-full overflow-y-auto pr-4 pl-2 scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400">
         {/* Title */}

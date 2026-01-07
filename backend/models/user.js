@@ -12,6 +12,10 @@ const progressSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  courseId: {
+    type: String,
+    required: true
+  },
   videoIndex: {
     type: Number,
     default: 0

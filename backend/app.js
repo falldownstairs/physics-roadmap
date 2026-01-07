@@ -255,8 +255,8 @@ app.get('/api/:courseName/:lessonId', async (req, res) => {
       return res.status(404).json({ message: 'Course not found' });
     }
     
-    // Find lesson using the lesson id
-    const lesson = dataService.getLessonById(lessonId);
+    // Find lesson using the course name and lesson id (composite key lookup)
+    const lesson = dataService.getLessonById(lessonId, courseName);
     
     if (!lesson) {
       return res.status(404).json({ message: 'Lesson not found' });
@@ -285,9 +285,11 @@ app.listen(PORT, async () => {
   console.log('   - GET /api/auth/google/callback');
   console.log('   - GET /api/auth/user');
   console.log('   Progress:');
-  console.log('   - GET /api/progress/:lessonId');
-  console.log('   - POST /api/progress/:lessonId');
-  console.log('   - GET /api/course/:courseName/problems');
+  console.log('   - GET /api/progress/:courseId/:lessonId');
+  console.log('   - POST /api/progress/:courseId/:lessonId');
+  console.log('   - GET /api/progress/course/:courseName');
+  console.log('   - GET /api/progress/course/:courseName/problems');
+  console.log('   - GET /api/progress/course/:courseName/completion');
   console.log('   Validation:');
   console.log('   - POST /api/validation/validate-answer');
   console.log('   Debug:');

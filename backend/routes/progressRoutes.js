@@ -12,10 +12,10 @@ const isAuthenticated = (req, res, next) => {
   res.status(401).json({ message: 'Not authenticated' });
 };
 
-// Get progress for a specific lesson
-router.get('/:lessonId', isAuthenticated, async (req, res) => {
+// Get progress for a specific lesson in a course
+router.get('/:courseId/:lessonId', isAuthenticated, async (req, res) => {
   try {
-    const { lessonId } = req.params;
+    const { courseId, lessonId } = req.params;
     const userId = req.user._id;
 
     const user = await User.findById(userId);
@@ -24,7 +24,10 @@ router.get('/:lessonId', isAuthenticated, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const lessonProgress = user.progress.find(p => p.lessonId === lessonId);
+    // Find progress matching both courseId and lessonId
+    const lessonProgress = user.progress.find(
+      p => p.lessonId === lessonId && p.courseId === courseId
+    );
 
     if (!lessonProgress) {
       return res.status(404).json({ message: 'No progress found for this lesson' });
@@ -41,10 +44,10 @@ router.get('/:lessonId', isAuthenticated, async (req, res) => {
   }
 });
 
-// Save/update progress for a specific lesson
-router.post('/:lessonId', isAuthenticated, async (req, res) => {
+// Save/update progress for a specific lesson in a course
+router.post('/:courseId/:lessonId', isAuthenticated, async (req, res) => {
   try {
-    const { lessonId } = req.params;
+    const { courseId, lessonId } = req.params;
     const { videoIndex, questionIndex, userAnswers } = req.body;
     const userId = req.user._id;
 
@@ -54,10 +57,14 @@ router.post('/:lessonId', isAuthenticated, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const existingProgressIndex = user.progress.findIndex(p => p.lessonId === lessonId);
+    // Find progress matching both courseId and lessonId
+    const existingProgressIndex = user.progress.findIndex(
+      p => p.lessonId === lessonId && p.courseId === courseId
+    );
 
     const newProgress = {
       lessonId,
+      courseId,
       videoIndex,
       questionIndex,
       userAnswers,
@@ -94,12 +101,26 @@ router.get('/course/:courseName', isAuthenticated, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Get all lesson progress for lessons in this course
-    // We could filter by course if lessons have courseId stored in them
-    // For now return all progress and filter on frontend
+    // Migrate legacy progress entries that don't have courseId
+    // Assume they belong to 'mechanics' (the original course)
+    let needsSave = false;
+    user.progress.forEach(p => {
+      if (!p.courseId) {
+        p.courseId = 'mechanics';
+        needsSave = true;
+      }
+    });
+    
+    if (needsSave) {
+      await user.save();
+      console.log(`Migrated progress for user ${userId} - added courseId to legacy entries`);
+    }
+    
+    // Filter progress by courseId to only return progress for this course
+    const courseProgress = user.progress.filter(p => p.courseId === courseName);
     
     res.json({
-      progress: user.progress
+      progress: courseProgress
     });
   } catch (error) {
     console.error('Error fetching course progress:', error);
@@ -151,6 +172,19 @@ router.get('/course/:courseName/completion', isAuthenticated, async (req, res) =
       return res.status(404).json({ message: 'User not found' });
     }
     
+    // Migrate legacy progress entries that don't have courseId
+    let needsSave = false;
+    user.progress.forEach(p => {
+      if (!p.courseId) {
+        p.courseId = 'mechanics';
+        needsSave = true;
+      }
+    });
+    
+    if (needsSave) {
+      await user.save();
+    }
+    
     // Get course data (you'll need to pass this from frontend or load it)
     // For now, we'll calculate based on lesson IDs from user progress
     const lessons = dataService.getLessonsForCourse(courseName);
@@ -169,11 +203,14 @@ router.get('/course/:courseName/completion', isAuthenticated, async (req, res) =
       problemCounts[lesson.id.toString()] = totalProblems;
     });
     
-    // Calculate lesson completions
+    // Calculate lesson completions - filter by courseId
     const lessonCompletions = {};
     lessons.forEach(lesson => {
       const lessonId = lesson.id.toString();
-      const lessonProgress = user.progress.find(p => p.lessonId === lessonId);
+      // Find progress matching both lessonId AND courseId
+      const lessonProgress = user.progress.find(
+        p => p.lessonId === lessonId && p.courseId === courseName
+      );
       const total = problemCounts[lessonId] || 0;
       const answered = lessonProgress ? lessonProgress.userAnswers.length : 0;
       

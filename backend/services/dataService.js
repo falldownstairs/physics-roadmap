@@ -7,10 +7,16 @@ const path = require('path');
 const courses = require('../data/courses');
 
 // In-memory data store
+// Lessons are stored with composite key: "courseId:lessonId"
 const dataStore = {
   courses: new Map(),
   lessons: new Map()
 };
+
+// Helper to create composite key
+function lessonKey(courseId, lessonId) {
+  return `${courseId}:${lessonId}`;
+}
 
 // Load lessons from nested folder structure
 function loadLessonsFromFolder(courseFolderPath, courseId) {
@@ -23,7 +29,8 @@ function loadLessonsFromFolder(courseFolderPath, courseId) {
       const lessonFilePath = path.join(courseFolderPath, item.name, `${item.name}.js`);
       if (fs.existsSync(lessonFilePath)) {
         const lesson = require(lessonFilePath);
-        dataStore.lessons.set(lesson.id, lesson);
+        // Use composite key to avoid collisions between courses
+        dataStore.lessons.set(lessonKey(courseId, lesson.id), lesson);
       }
     } else if (item.isDirectory()) {
       // This is a topic subfolder
@@ -35,7 +42,8 @@ function loadLessonsFromFolder(courseFolderPath, courseId) {
         const lessonFilePath = path.join(topicPath, lessonFolder.name, `${lessonFolder.name}.js`);
         if (fs.existsSync(lessonFilePath)) {
           const lesson = require(lessonFilePath);
-          dataStore.lessons.set(lesson.id, lesson);
+          // Use composite key to avoid collisions between courses
+          dataStore.lessons.set(lessonKey(courseId, lesson.id), lesson);
         }
       });
     }
@@ -109,19 +117,27 @@ function processQuestionImages(courseId, topicId, lessonId, question) {
 }
 
 // Get lesson by id (modified to process images)
-function getLessonById(lessonId) {
-  const lesson = dataStore.lessons.get(lessonId);
-  if (!lesson) return null;
+// Now requires courseId to properly lookup with composite key
+function getLessonById(lessonId, courseId = null) {
+  let lesson = null;
+  let foundCourseId = courseId;
   
-  let courseId = null;
-  for (const [id, course] of dataStore.courses) {
-    if (course.lessons.includes(lessonId)) {
-      courseId = id;
-      break;
+  if (courseId) {
+    // Direct lookup with composite key
+    lesson = dataStore.lessons.get(lessonKey(courseId, lessonId));
+    foundCourseId = courseId;
+  } else {
+    // Fallback: search all courses for this lesson
+    for (const [id, course] of dataStore.courses) {
+      if (course.lessons.includes(lessonId)) {
+        lesson = dataStore.lessons.get(lessonKey(id, lessonId));
+        foundCourseId = id;
+        if (lesson) break;
+      }
     }
   }
   
-  if (!courseId) return lesson;
+  if (!lesson) return null;
   
   const topicId = lesson.topicId;
   
@@ -129,7 +145,7 @@ function getLessonById(lessonId) {
     ...lesson,
     videos: lesson.videos.map(video => ({
       ...video,
-      questions: video.questions.map(q => processQuestionImages(courseId, topicId, lessonId, q))
+      questions: video.questions.map(q => processQuestionImages(foundCourseId, topicId, lessonId, q))
     }))
   };
   
@@ -141,7 +157,7 @@ function getLessonsForCourse(courseId) {
   const course = dataStore.courses.get(courseId);
   if (!course) return [];
   
-  return course.lessons.map(lessonId => dataStore.lessons.get(lessonId)).filter(Boolean);
+  return course.lessons.map(lessonId => dataStore.lessons.get(lessonKey(courseId, lessonId))).filter(Boolean);
 }
 
 module.exports = {

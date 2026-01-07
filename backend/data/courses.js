@@ -23,6 +23,17 @@ module.exports = [
     id: "electricity-magnetism",
     name: "Electricity & Magnetism",
     description: "Electric fields, magnetic fields, and electromagnetic phenomena", 
-    lessons: []
+    lessons: [
+      "101", "102", "103", "104", "105",
+      "201", "202", "203", "204",
+      "301", "302", "303",
+      "401", "402", "403",
+      "501", "502", "503", "504",
+      "601", "602", "603",
+      "701", "702", "703",
+      "801", "802", "803",
+      "901", "902", "903", "904", "905",
+      "1001", "1002", "1003"
+    ]
   }
 ];

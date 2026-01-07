@@ -1,7 +1,31 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { fetchCourseProgress, fetchTotalProblems } from '../lib/progressApi';
 import { ModuleProgress } from '../lib/types';
-import { courseData, connections } from '../lib/mechanicsContent';
+import { courseData as mechanicsCourseData, connections as mechanicsConnections } from '../lib/mechanicsContent';
+import { courseData as emCourseData, connections as emConnections } from '../lib/emContent';
+
+interface NodeData {
+  id: number;
+  type: 'lesson' | 'topic' | 'root';
+  title: string;
+  description: string;
+  videos: { number: string; title: string }[];
+  practiceProblems?: string;
+  x: number;
+  y: number;
+}
+
+interface Connection {
+  from: number;
+  to: number;
+  offset: number;
+}
+
+// Map course names to their data
+const courseDataMap: Record<string, { courseData: NodeData[], connections: Connection[] }> = {
+  'mechanics': { courseData: mechanicsCourseData, connections: mechanicsConnections },
+  'electricity-magnetism': { courseData: emCourseData, connections: emConnections }
+};
 
 interface CompletionStatus {
   lessons: Record<string, boolean>;
@@ -28,6 +52,8 @@ const defaultContext: ProgressContextType = {
 const ProgressContext = createContext<ProgressContextType>(defaultContext);
 
 export function ProgressProvider({ children, courseName }: { children: React.ReactNode, courseName: string }) {
+  // Get course-specific data
+  const { courseData, connections } = courseDataMap[courseName] || courseDataMap['mechanics'];
   const [progressData, setProgressData] = useState<Record<string, ModuleProgress>>({});
   const [totalProblems, setTotalProblems] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -130,7 +156,7 @@ export function ProgressProvider({ children, courseName }: { children: React.Rea
     const root = completedTopics === rootTopics.length && rootTopics.length > 0;
 
     return { lessons, topics, root };
-  }, [progressData, totalProblems]);
+  }, [progressData, totalProblems, courseData, connections]);
 
   return (
     <ProgressContext.Provider value={{ progressData, totalProblems, completionStatus, isLoading, error }}>

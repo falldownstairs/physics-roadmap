@@ -23,9 +23,7 @@ export default function Node({title, id, type, x, y, onClick}: NodeProps){
     if (type === 'lesson') {
       const lessonProgress = progressData[idStr];
       const total = totalProblems[idStr] || 0;
-      
       if (!lessonProgress || total === 0) return 0;
-      
       return Math.min(100, (lessonProgress.userAnswers.length / total) * 100);
     } else if (type === 'topic') {
       const topicData = completionStatus.topics[idStr];

@@ -66,17 +66,14 @@ export function ProgressProvider({ children, courseName }: { children: React.Rea
           fetchCourseProgress(courseName),
           fetchTotalProblems(courseName)
         ]);
-        
         setProgressData(progress);
         setTotalProblems(problems);
-        setIsLoading(false);
       } catch (err) {
-        console.error('Error fetching progress data:', err);
         setError('Failed to load progress data');
+      } finally {
         setIsLoading(false);
       }
     }
-    
     fetchData();
   }, [courseName]);
 

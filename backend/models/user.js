@@ -14,7 +14,7 @@ const progressSchema = new mongoose.Schema({
   },
   courseId: {
     type: String,
-    required: true
+    default: 'mechanics'  // Default for legacy progress entries
   },
   videoIndex: {
     type: Number,

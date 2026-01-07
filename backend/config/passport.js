@@ -10,11 +10,31 @@ passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
     
+    if (!user) {
+      return done(null, false);
+    }
+    
+    // Migrate legacy progress entries that don't have courseId
+    let needsSave = false;
+    if (user.progress && user.progress.length > 0) {
+      user.progress.forEach(p => {
+        if (!p.courseId) {
+          p.courseId = 'mechanics';
+          needsSave = true;
+        }
+      });
+    }
+    
     // Check if profile picture needs refreshing (older than 12 hours)
     const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
     if (user.profilePictureUpdatedAt && user.profilePictureUpdatedAt < twelveHoursAgo) {
       // Profile picture URL is potentially stale, clear it
       user.profilePicture = undefined;
+    }
+    
+    if (needsSave) {
+      await user.save();
+      console.log(`Migrated progress for user ${id} during deserialize`);
     }
     
     done(null, user);
@@ -47,6 +67,16 @@ passport.use(
         if (user) {
           // Update existing user with fresh profile picture URL
           Object.assign(user, profileData);
+          
+          // Migrate legacy progress entries that don't have courseId
+          if (user.progress && user.progress.length > 0) {
+            user.progress.forEach(p => {
+              if (!p.courseId) {
+                p.courseId = 'mechanics';
+              }
+            });
+          }
+          
           await user.save();
           return done(null, user);
         }

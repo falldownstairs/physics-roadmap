@@ -28,17 +28,44 @@ interface CourseRoadmapProps {
 }
 
 export default function CourseRoadmap({ courseData, connections, courseName }: CourseRoadmapProps){
-  // Reference resolution (where current values are perfect)
-  const REFERENCE_WIDTH = 1400;
-  const REFERENCE_HEIGHT = 700;
-  const REFERENCE_POSITION = { x: -75, y: 50 };
-  const REFERENCE_SCALE = 0.42;
+  // ✅ PERFORMANCE FIX: Memoize expensive calculations
+  const contentBounds = useMemo(() => {
+    const minX = Math.min(...courseData.map(node => node.x));
+    const maxX = Math.max(...courseData.map(node => node.x)) + 176; // node width
+    const minY = Math.min(...courseData.map(node => node.y));
+    const maxY = Math.max(...courseData.map(node => node.y)) + 80; // node height
+    return { minX, maxX, minY, maxY, width: maxX - minX, height: maxY - minY };
+  }, [courseData]);
 
-  // Always start with reference values for SSR
-  const [position, setPosition] = useState(REFERENCE_POSITION);
+  const maxX = useMemo(() => contentBounds.maxX + 200, [contentBounds]);
+  const maxY = useMemo(() => contentBounds.maxY + 200, [contentBounds]);
+
+  // Calculate initial scale and position based on content size
+  const getInitialView = useCallback((viewportWidth: number, viewportHeight: number) => {
+    const padding = 100; // padding around content
+    const contentWidth = contentBounds.width + padding * 2;
+    const contentHeight = contentBounds.height + padding * 2;
+    
+    // Calculate scale to fit content in viewport
+    const scaleX = viewportWidth / contentWidth;
+    const scaleY = viewportHeight / contentHeight;
+    const scale = Math.min(scaleX, scaleY, 0.5); // cap at 0.5 for readability
+    
+    // Center the content in the viewport
+    const contentCenterX = contentBounds.minX + contentBounds.width / 2;
+    const contentCenterY = contentBounds.minY + contentBounds.height / 2;
+    
+    const posX = (viewportWidth / 2) - (contentCenterX * scale);
+    const posY = (viewportHeight / 2) - (contentCenterY * scale);
+    
+    return { scale, position: { x: posX, y: posY } };
+  }, [contentBounds]);
+
+  // Initial values for SSR (will be adjusted after hydration)
+  const [position, setPosition] = useState({ x: 0, y: 50 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(REFERENCE_SCALE);
+  const [scale, setScale] = useState(0.35);
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
   const [sidebarWidth, setSidebarWidth] = useState(20);
   const [sidebarHeight, setSidebarHeight] = useState(70);
@@ -50,10 +77,6 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
   const [isFadedIn, setIsFadedIn] = useState(false);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
-  
-  // ✅ PERFORMANCE FIX: Memoize expensive calculations
-  const maxX = useMemo(() => Math.max(...courseData.map(node => node.x)) + 200, [courseData]);
-  const maxY = useMemo(() => Math.max(...courseData.map(node => node.y)) + 200, [courseData]);
 
   // Adjust after hydration
   useEffect(() => {
@@ -65,18 +88,9 @@ export default function CourseRoadmap({ courseData, connections, courseName }: C
     const viewportWidth = checkMobile ? window.innerWidth : window.innerWidth * 0.8;
     const viewportHeight = checkMobile ? window.innerHeight * 0.4 : window.innerHeight;
 
-    const widthRatio = viewportWidth / REFERENCE_WIDTH;
-    const heightRatio = viewportHeight / REFERENCE_HEIGHT;
-    const scaleMultiplier = Math.min(widthRatio, heightRatio);
-
-    // Only adjust if significantly different
-    if (Math.abs(scaleMultiplier - 1) > 0.05) {
-      setPosition({
-        x: REFERENCE_POSITION.x * scaleMultiplier,
-        y: REFERENCE_POSITION.y * scaleMultiplier
-      });
-      setScale(REFERENCE_SCALE * scaleMultiplier);
-    }
+    const initialView = getInitialView(viewportWidth, viewportHeight);
+    setScale(initialView.scale);
+    setPosition(initialView.position);
 
     // Fade in after a short delay
     setTimeout(() => {

@@ -39,6 +39,7 @@ export interface Video {
 
 export interface Lesson {
   id: string;
+  courseId: string;
   title: string;
   estimatedTime: string;
   videos: Video[];

@@ -32,7 +32,7 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
       setIsLoading(true);
       
       if (isUserAuthenticated) {
-        const apiProgress = await fetchProgress(lesson.id);
+        const apiProgress = await fetchProgress(lesson.courseId, lesson.id);
         
         if (apiProgress) {
           setCurrentVideoIndex(apiProgress.videoIndex);
@@ -46,7 +46,7 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
     }
     
     loadProgress();
-  }, [lesson.id, lesson.videos, isUserAuthenticated, authLoading]);
+  }, [lesson.id, lesson.courseId, lesson.videos, isUserAuthenticated, authLoading]);
 
   // Save progress whenever key state changes
   useEffect(() => {
@@ -59,10 +59,10 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
       userAnswers
     };
     
-    saveProgress(lesson.id, progress).catch(err => {
+    saveProgress(lesson.courseId, lesson.id, progress).catch(err => {
       console.error('Failed to save progress:', err);
     });
-  }, [currentVideoIndex, currentQuestionIndex, userAnswers, lesson.id, isUserAuthenticated, authLoading]);
+  }, [currentVideoIndex, currentQuestionIndex, userAnswers, lesson.id, lesson.courseId, isUserAuthenticated, authLoading]);
 
   const handleAnswerSubmit = (videoIdx: number, questionIdx: number, answer: string | number, isCorrect: boolean) => {
     // Use functional update to avoid stale closures
@@ -161,7 +161,7 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
         <div className={`max-w-5xl mx-auto px-6 transition-all duration-300 pt-4 pb-4`}>
           {/* Return to Roadmap Button */}
           <Link
-            href="/mechanics"
+            href={`/${lesson.courseId}`}
             className="mb-3 flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

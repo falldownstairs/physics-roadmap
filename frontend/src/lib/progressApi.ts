@@ -2,9 +2,9 @@ import { ModuleProgress } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
-export async function fetchProgress(lessonId: string): Promise<ModuleProgress | null> {
+export async function fetchProgress(courseId: string, lessonId: string): Promise<ModuleProgress | null> {
   try {
-    const response = await fetch(`${API_URL}/api/progress/${lessonId}`, {
+    const response = await fetch(`${API_URL}/api/progress/${courseId}/${lessonId}`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
@@ -26,9 +26,9 @@ export async function fetchProgress(lessonId: string): Promise<ModuleProgress | 
   }
 }
 
-export async function saveProgress(lessonId: string, progress: ModuleProgress): Promise<void> {
+export async function saveProgress(courseId: string, lessonId: string, progress: ModuleProgress): Promise<void> {
   try {
-    const response = await fetch(`${API_URL}/api/progress/${lessonId}`, {
+    const response = await fetch(`${API_URL}/api/progress/${courseId}/${lessonId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -73,6 +73,44 @@ export default function AboutPage() {
             </p>
           </div>
         </section>
+
+        <section className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-md p-8 space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">☕</span>
+            <h3 className="text-xl font-semibold text-slate-900">Support This Project</h3>
+          </div>
+          <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
+            Donations are highly appreciated but not necessary at all! This resource will always remain free. 
+            If you&apos;ve found it helpful and want to support its continued development, consider buying me a coffee.
+          </p>
+          <Link
+            href="https://buymeacoffee.com/physicsroadmap"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
+          >
+            <span>☕</span>
+            Buy Me a Coffee
+          </Link>
+        </section>
+
+        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl shadow-md p-8 space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">✉️</span>
+            <h3 className="text-xl font-semibold text-slate-900">Contact & Feedback</h3>
+          </div>
+          <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
+            Have suggestions or found an issue? Feel free to reach out at{' '}
+            <span className="font-medium text-blue-700">physicsroadmap1@gmail.com</span>
+          </p>
+          <a
+            href="mailto:physicsroadmap1@gmail.com"
+            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
+          >
+            <span>📧</span>
+            Send an Email
+          </a>
+        </section>
       </div>
     </div>
   );

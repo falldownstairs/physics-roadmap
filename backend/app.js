@@ -42,7 +42,8 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Set-Cookie']
 }));
 
 app.use(express.json());
@@ -53,13 +54,22 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'your-session-secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI, touchAfter: 24 * 3600 }),
+  store: MongoStore.create({ 
+    mongoUrl: process.env.MONGODB_URI, 
+    touchAfter: 24 * 3600 
+  }),
   cookie: {
     maxAge: 14 * 24 * 60 * 60 * 1000,
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    // Explicitly set domain for production to help with Safari
+    ...(process.env.NODE_ENV === 'production' && {
+      domain: undefined // Let browser infer - important for Safari
+    })
+  },
+  // Important: name the session cookie explicitly
+  name: 'physics.sid'
 }));
 
 app.use(passport.initialize());

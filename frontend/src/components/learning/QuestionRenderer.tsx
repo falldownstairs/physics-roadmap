@@ -2,7 +2,6 @@ import { Question } from '@/lib/types';
 import { memo } from 'react';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import MathInputQuestion from './MathInputQuestion';
-import WordQuestion from './WordQuestion';
 import LatexRenderer from './LatexRenderer';
 
 interface QuestionRendererProps {
@@ -45,25 +44,6 @@ function QuestionRenderer({ question, onSubmit, disabled, submittedAnswer, isCor
             />
           </div>
           <MathInputQuestion 
-            question={question} 
-            onSubmit={onSubmit} 
-            disabled={disabled} 
-            submittedAnswer={submittedAnswer as string}
-            isCorrect={isCorrect}
-            isCompleted={isCompleted}
-          />
-        </>
-      );
-    case 'word-question':
-      return (
-        <>
-          <div className="mb-4">
-            <LatexRenderer 
-              content={question.question}
-              className="text-lg font-medium text-slate-800"
-            />
-          </div>
-          <WordQuestion 
             question={question} 
             onSubmit={onSubmit} 
             disabled={disabled} 

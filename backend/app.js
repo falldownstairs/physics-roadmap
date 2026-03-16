@@ -12,7 +12,6 @@ require('./config/passport');
 const dataService = require('./services/dataService');
 const authRoutes = require('./routes/auth');
 const progressRoutes = require('./routes/progressRoutes');
-const validationRoutes = require('./routes/validation');
 
 const app = express();
 const PORT = 3002;
@@ -82,7 +81,6 @@ app.use('/images/lessons', express.static(path.join(__dirname, 'data')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/progress', progressRoutes);
-app.use('/api/validation', validationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -95,6 +93,7 @@ app.get('/api/health', (req, res) => {
 // Get all courses
 app.get('/api/courses', (req, res) => {
   try {
+    res.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     res.json(dataService.getAllCourses());
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -111,17 +110,22 @@ app.get('/api/:courseName/:lessonId', (req, res) => {
     const lesson = dataService.getLessonById(lessonId, courseName);
     if (!lesson) return res.status(404).json({ message: 'Lesson not found' });
     
+    res.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     res.json(lesson);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
 
-process.on('SIGINT', async () => {
-  await mongoose.connection.close();
-  process.exit(0);
-});
+  process.on('SIGINT', async () => {
+    await mongoose.connection.close();
+    process.exit(0);
+  });
+}
+
+module.exports = app;

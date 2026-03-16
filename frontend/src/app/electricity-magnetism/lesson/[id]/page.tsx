@@ -1,6 +1,8 @@
-import { fetchLesson } from '@/lib/api';
+import { fetchLessonCached } from '@/lib/api';
 import LearningModule from '@/components/learning/LearningModule';
 import type { Metadata } from 'next';
+
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{
@@ -11,7 +13,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   try {
-    const lesson = await fetchLesson(id, 'electricity-magnetism');
+    const lesson = await fetchLessonCached(id, 'electricity-magnetism');
     return {
       title: `${lesson.title} - AP Physics C: E&M`,
       description: `Learn ${lesson.title} in AP Physics C Electricity & Magnetism. ${lesson.videos?.length || 0} video lesson${(lesson.videos?.length || 0) !== 1 ? 's' : ''} with practice questions.`,
@@ -26,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LessonPage({ params }: PageProps) {
   const { id } = await params;
-  const lesson = await fetchLesson(id, 'electricity-magnetism');
+  const lesson = await fetchLessonCached(id, 'electricity-magnetism');
 
   return (
     <div className="min-h-screen bg-slate-50">

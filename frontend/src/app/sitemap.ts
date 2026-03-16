@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next';
 import { courseData as mechanicsData } from '@/lib/mechanicsContent';
 import { courseData as emData } from '@/lib/emContent';
 
+export const revalidate = 86400;
+
 const BASE_URL = 'https://physicsroadmap.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {

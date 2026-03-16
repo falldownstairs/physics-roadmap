@@ -49,23 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.log('User data received:', data);
         
         if (data.isAuthenticated && data.user) {
-          // Validate profile picture URL
           const userData = data.user;
-          
-          // Check if profile picture is accessible
-          if (userData.profilePicture) {
-            try {
-              const imgResponse = await fetch(userData.profilePicture, { method: 'HEAD' });
-              if (!imgResponse.ok) {
-                console.warn('Profile picture URL is stale, clearing it');
-                userData.profilePicture = undefined;
-              }
-            } catch (err) {
-              console.warn('Failed to validate profile picture, clearing it');
-              userData.profilePicture = undefined;
-            }
-          }
-          
           setUser(userData);
           // Persist user data to localStorage
           localStorage.setItem('user', JSON.stringify(userData));
@@ -115,22 +99,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Then verify with backend
     fetchUser();
     
-    // Refetch user when tab becomes visible (in case auth happened in another tab)
+    // Refetch user when tab becomes visible after being hidden for >5 minutes
+    let lastFetch = Date.now();
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && Date.now() - lastFetch > 5 * 60 * 1000) {
+        lastFetch = Date.now();
         fetchUser();
       }
     };
     
-    // Periodically refresh session (every 15 minutes)
-    const refreshInterval = setInterval(() => {
-      fetchUser();
-    }, 15 * 60 * 1000);
-    
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      clearInterval(refreshInterval);
     };
   }, []);
 

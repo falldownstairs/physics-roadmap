@@ -8,6 +8,16 @@
   ],
   "routes": [
     {
+      "src": "/api/courses",
+      "dest": "app.js",
+      "headers": { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" }
+    },
+    {
+      "src": "/images/lessons/(.*)",
+      "dest": "app.js",
+      "headers": { "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800" }
+    },
+    {
       "src": "/(.*)",
       "dest": "app.js"
     }

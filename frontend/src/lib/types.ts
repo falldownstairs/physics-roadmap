@@ -22,14 +22,7 @@ export interface MathInputQuestion {
   explanation: string;
 }
 
-export interface WordQuestion {
-  type: 'word-question';
-  question: string;
-  answer: string;
-  explanation: string;
-}
-
-export type Question = MultipleChoiceQuestion | MathInputQuestion | WordQuestion;
+export type Question = MultipleChoiceQuestion | MathInputQuestion;
 
 export interface Video {
   videoId: string;

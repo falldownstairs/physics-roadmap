@@ -1,7 +1,11 @@
+import { cache } from 'react';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 export async function fetchLesson(lessonId: string, courseName: string): Promise<any> {
-  const response = await fetch(`${API_URL}/api/${courseName}/${lessonId}`);
+  const response = await fetch(`${API_URL}/api/${courseName}/${lessonId}`, {
+    next: { revalidate: 3600 },
+  });
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -9,7 +13,6 @@ export async function fetchLesson(lessonId: string, courseName: string): Promise
 
   const lesson = await response.json();
   
-  // Convert relative image paths to absolute backend URLs
   if (lesson.videos) {
     lesson.videos = lesson.videos.map((video: any) => ({
       ...video,
@@ -36,4 +39,8 @@ export async function fetchLesson(lessonId: string, courseName: string): Promise
   
   return lesson;
 }
+
+// Deduplicates fetchLesson calls within a single server render
+// (generateMetadata + page component both call this for the same lesson)
+export const fetchLessonCached = cache(fetchLesson);
              

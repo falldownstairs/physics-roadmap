@@ -8,7 +8,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id).lean();
+    const user = await User.findById(id);
     if (!user) return done(null, false);
     done(null, user);
   } catch (err) {
@@ -34,14 +34,12 @@ passport.use(
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
           profilePicture: profile.photos[0].value,
-          profilePictureUpdatedAt: new Date() // Track when we last updated the URL
+          profilePictureUpdatedAt: new Date()
         };
         
         if (user) {
-          // Update existing user with fresh profile picture URL
           Object.assign(user, profileData);
           
-          // Migrate legacy progress entries that don't have courseId
           if (user.progress && user.progress.length > 0) {
             user.progress.forEach(p => {
               if (!p.courseId) {
@@ -54,7 +52,6 @@ passport.use(
           return done(null, user);
         }
         
-        // Create new user
         user = new User({
           googleId: profile.id,
           ...profileData

@@ -62,12 +62,10 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    // Explicitly set domain for production to help with Safari
     ...(process.env.NODE_ENV === 'production' && {
-      domain: undefined // Let browser infer - important for Safari
+      domain: undefined
     })
   },
-  // Important: name the session cookie explicitly
   name: 'physics.sid'
 }));
 
@@ -117,15 +115,11 @@ app.get('/api/:courseName/:lessonId', (req, res) => {
   }
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
 
-  process.on('SIGINT', async () => {
-    await mongoose.connection.close();
-    process.exit(0);
-  });
-}
-
-module.exports = app;
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  process.exit(0);
+});

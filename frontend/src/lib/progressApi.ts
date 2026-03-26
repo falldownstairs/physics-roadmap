@@ -1,6 +1,6 @@
 import { ModuleProgress } from './types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+const API_URL = '';
 
 export async function fetchProgress(courseId: string, lessonId: string): Promise<ModuleProgress | null> {
   try {

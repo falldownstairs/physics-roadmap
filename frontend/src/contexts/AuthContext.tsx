@@ -37,12 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchUser = async () => {
     try {
       console.log('Fetching user data...');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}/api/auth/user`, {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await fetch('/api/auth/user');
 
       if (response.ok) {
         const data = await response.json();
@@ -116,9 +111,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}/api/auth/logout`, {
+      await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include'
       });
       setUser(null);
       localStorage.removeItem('user');

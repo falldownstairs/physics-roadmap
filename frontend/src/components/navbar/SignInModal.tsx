@@ -31,9 +31,8 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
       sessionStorage.setItem('authRedirectUrl', window.location.pathname);
     }
     
-    // Redirect to Google OAuth
-    const authUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}/api/auth/google`;
-    window.location.href = authUrl;
+    // Redirect to Google OAuth (same-origin, proxied to backend via Next.js rewrites)
+    window.location.href = '/api/auth/google';
   };
 
   return (

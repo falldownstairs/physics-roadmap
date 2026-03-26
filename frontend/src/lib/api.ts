@@ -1,6 +1,10 @@
 import { cache } from 'react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+// Server-side (SSR/ISR) fetches go directly to the backend; client-side fetches
+// use relative paths that Next.js rewrites proxy to the backend.
+const API_URL = typeof window === 'undefined'
+  ? (process.env.BACKEND_URL || 'http://localhost:3002')
+  : '';
 
 export async function fetchLesson(lessonId: string, courseName: string): Promise<any> {
   const response = await fetch(`${API_URL}/api/${courseName}/${lessonId}`, {

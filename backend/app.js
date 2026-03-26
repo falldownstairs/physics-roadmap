@@ -61,10 +61,7 @@ app.use(session({
     maxAge: 14 * 24 * 60 * 60 * 1000,
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    ...(process.env.NODE_ENV === 'production' && {
-      domain: undefined
-    })
+    sameSite: 'lax',
   },
   name: 'physics.sid'
 }));

@@ -55,13 +55,12 @@ export default function Navbar() {
               );
             })}
 
-            {/* Calend promo link - distinct color to stand out */}
             <Link
               href="/calend"
               aria-label="Calend"
-              className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full transition-all duration-200 whitespace-nowrap min-w-[2.5rem] ${isCalendActive
-                ? "bg-indigo-100 text-indigo-700"
-                : "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
+              className={`inline-flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 whitespace-nowrap min-w-[2.5rem] ${isCalendActive
+                ? "text-black bg-slate-200"
+                : "text-slate-600 hover:text-black hover:bg-slate-100"
                 }`}
             >
               <Image
@@ -69,14 +68,9 @@ export default function Navbar() {
                 alt="Calend"
                 width={22}
                 height={22}
-                className="block sm:hidden"
-                style={{ filter: "invert(26%) sepia(94%) saturate(4987%) hue-rotate(237deg) brightness(91%) contrast(95%)" }}
+                className={`block sm:hidden ${isCalendActive ? "brightness-0" : "brightness-0 opacity-60"}`}
               />
               <span className="hidden sm:inline font-bold">Calend</span>
-              <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-[10px] font-bold text-white leading-none animate-pulse">
-                NEW
-              </span>
-              <span className="block sm:hidden w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
             </Link>
           </div>
 

@@ -46,7 +46,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
       <button
         onClick={handleGoogleSignIn}
         disabled={isLoading}
-        className="w-full flex items-center justify-center gap-3 px-6 py-3 border border-slate-300 rounded-full hover:bg-slate-50 transition-all duration-200 font-medium text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center  justify-center gap-3 px-6 py-3 border border-slate-300 rounded-full hover:bg-slate-50 transition-all duration-200 font-medium text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
@@ -63,3 +63,4 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
     </BaseModal>
   );
 }
+

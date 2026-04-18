@@ -24,8 +24,8 @@ module.exports = {
         {
           type: 'math-input',
           question: "Two objects collide. Object A has mass $3\\text{ kg}$ and initial velocity $4\\text{ m/s}$ to the right. Object B has mass $2\\text{ kg}$ and initial velocity $1\\text{ m/s}$ to the left. After collision, object A moves at $1\\text{ m/s}$ to the right. Find the final velocity of object B (in $\\text{m/s}$). Use positive for rightward motion.",
-          mathAnswer: "2.5",
-          explanation: "Using conservation of momentum with rightward as positive:\n\n$$p_{\\text{initial}} = p_{\\text{final}}$$\n\n$$m_A v_{Ai} + m_B v_{Bi} = m_A v_{Af} + m_B v_{Bf}$$\n\nSubstituting values (note: $v_{Bi} = -1\\text{ m/s}$ since leftward):\n\n$$(3)(4) + (2)(-1) = (3)(1) + (2)v_{Bf}$$\n\n$$12 - 2 = 3 + 2v_{Bf}$$\n\n$$10 = 3 + 2v_{Bf}$$\n\n$$v_{Bf} = 2.5\\text{ m/s}$$\n\nThe positive result indicates object B moves to the right after collision."
+          mathAnswer: "3.5",
+          explanation: "Using conservation of momentum with rightward as positive:\n\n$$p_{\\text{initial}} = p_{\\text{final}}$$\n\n$$m_A v_{Ai} + m_B v_{Bi} = m_A v_{Af} + m_B v_{Bf}$$\n\nSubstituting values (note: $v_{Bi} = -1\\text{ m/s}$ since leftward):\n\n$$(3)(4) + (2)(-1) = (3)(1) + (2)v_{Bf}$$\n\n$$12 - 2 = 3 + 2v_{Bf}$$\n\n$$10 = 3 + 2v_{Bf}$$\n\n$$v_{Bf} = 3.5\\text{ m/s}$$\n\nThe positive result indicates object B moves to the right after collision."
         },
         {
           type: 'multiple-choice',

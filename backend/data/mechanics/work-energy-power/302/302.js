@@ -37,6 +37,7 @@ module.exports = {
           type: 'math-input',
           question: "A force of $15\\text{ N}$ acts directly opposite to an object's displacement of $3\\text{ m}$. Calculate the work done by this force (in $\\text{J}$).",
           mathAnswer: "-45",
+          answerRange: 0.5,
           explanation: "When a force acts in the direction $\\text{opposite}$ to the displacement, the angle between them is $\\theta = 180^\\circ$.\n\nUsing the work formula:\n\n$$W = F s \\cos\\theta$$\n\n$$W = (15\\text{ N})(3\\text{ m})\\cos(180^\\circ)$$\n\n$$W = 45 \\times (-1) = -45\\text{ J}$$\n\nNegative work means the force removes energy from the object, opposing its motion."
         }
       ]
@@ -61,6 +62,7 @@ module.exports = {
           type: 'math-input',
           question: "A force varies with position as $F(x) = 6x^2$ (in newtons, with $x$ in meters). Calculate the work done (in $\\text{J}$) as an object moves from $x = 1\\text{ m}$ to $x = 2\\text{ m}$.",
           mathAnswer: "14",
+          answerRange: 0.1,
           explanation: "For a varying force, the work is found by integration:\n\n$$W = \\int_1^2 F(x) \\, dx = \\int_1^2 6x^2 \\, dx$$\n\nTaking the antiderivative:\n\n$$W = \\left[2x^3\\right]_1^2$$\n\nEvaluating at the boundaries:\n\n$$W = 2(2)^3 - 2(1)^3 = 2(8) - 2(1) = 16 - 2 = 14\\text{ J}$$\n\nThe integral represents the area under the $F$ versus $x$ curve between $x = 1$ and $x = 2$."
         }
       ]

@@ -55,6 +55,7 @@ module.exports = {
           type: 'math-input',
           question: "A box is pushed around a rectangular closed path on a table with dimensions $2\\text{ m}$ by $3\\text{ m}$. A constant friction force of $2\\text{ N}$ opposes the motion at all times. Calculate the total work done by friction (in $\\text{J}$) for one complete loop around the rectangle.",
           mathAnswer: "-20",
+          answerRange: 0.5,
           explanation: "Friction is a $\\text{non-conservative force}$, so work over a closed path is NOT zero.\n\nThe total distance traveled around the rectangle is:\n\n$$d = 2(2\\text{ m}) + 2(3\\text{ m}) = 10\\text{ m}$$\n\nSince friction always opposes motion ($\\theta = 180^\\circ$):\n\n$$W_f = F_f \\cdot d \\cdot \\cos(180^\\circ)$$\n\n$$W_f = (2\\text{ N})(10\\text{ m})(-1) = -20\\text{ J}$$\n\nThis demonstrates that friction is non-conservative: it does negative work over a closed path, dissipating energy as heat."
         }
       ]

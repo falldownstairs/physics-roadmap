@@ -20,6 +20,7 @@ module.exports = {
           type: 'math-input',
           question: "A uniform cylinder of mass $2 \\text{ kg}$ and radius $1 \\text{ m}$ has a string wrapped around it. The string is pulled with a force of $10 \\text{ N}$ tangent to the cylinder's edge. Calculate the angular acceleration (in $\\text{rad/s}^2$) of the cylinder. The rotational inertia of a cylinder is $I = \\frac{1}{2}MR^2$.",
           mathAnswer: "10",
+          answerRange: 0.1,
           explanation: "Using Newton's second law for rotation:\n\n$$\\alpha = \\frac{\\tau}{I}$$\n\nThe torque is:\n\n$$\\tau = FR = (10 \\text{ N})(1 \\text{ m}) = 10 \\text{ N}\\cdot\\text{m}$$\n\nThe rotational inertia is:\n\n$$I = \\frac{1}{2}MR^2 = \\frac{1}{2}(2 \\text{ kg})(1 \\text{ m})^2 = 1 \\text{ kg}\\cdot\\text{m}^2$$\n\nTherefore:\n\n$$\\alpha = \\frac{10 \\text{ N}\\cdot\\text{m}}{1 \\text{ kg}\\cdot\\text{m}^2} = 10 \\text{ rad/s}^2$$"
         }
       ]

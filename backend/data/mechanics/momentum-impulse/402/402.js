@@ -29,6 +29,7 @@ module.exports = {
             alt: 'Two objects approaching perpendicular to each other before collision'
           },
           mathAnswer: "2",
+          answerRange: 0.05,
           explanation: "Use conservation of momentum in the x-direction:\n\n$$p_{x, i} = p_{x, f}$$\n\n$$m_1 v_{1x} + m_2 v_{2x} = (m_1 + m_2)v_{fx}$$\n\nThe $1\\text{ kg}$ object has no x-component of velocity initially:\n\n$$(2)(3) + (1)(0) = (2 + 1)v_{fx}$$\n\n$$6 = 3v_{fx}$$\n\n$$v_{fx} = 2\\text{ m/s}$$\n\nSimilarly, for the y-direction:\n\n$$(2)(0) + (1)(2) = (3)v_{fy}$$\n\n$$v_{fy} = \\frac{2}{3}\\text{ m/s}$$\n\nThe final velocity has components $(2, \\frac{2}{3})\\text{ m/s}$."
         }
       ]
@@ -53,6 +54,7 @@ module.exports = {
           type: 'math-input',
           question: "A $0.02\\text{ kg}$ bullet embeds into a $1.98\\text{ kg}$ block hanging from a string. After collision, the combined mass swings up to a height of $0.8\\text{ m}$. Calculate the speed of the bullet just before impact (in $\\text{m/s}$). Use $g = 10\\text{ m/s}^2$.",
           mathAnswer: "400",
+          answerRange: 5,
           explanation: "This is a two-step problem:\n\n1. Find speed just after collision using energy conservation:\n\n$$mgh = \\frac{1}{2}mv'^2$$\n\n$$v' = \\sqrt{2gh} = \\sqrt{2(10)(0.8)} = 4\\text{ m/s}$$\n\n2. Find initial bullet speed using momentum conservation:\n\n$$m_{\\text{bullet}}v_0 = (m_{\\text{bullet}} + m_{\\text{block}})v'$$\n\n$$(0.02)v_0 = (2.00)(4)$$\n\n$$v_0 = \\frac{8}{0.02} = 400\\text{ m/s}$$\n\nNote: The kinetic energy before collision $K_i = \\frac{1}{2}(0.02)(400)^2 = 1600\\text{ J}$ is much greater than after collision $K_f = \\frac{1}{2}(2)(4)^2 = 16\\text{ J}$, showing significant thermal energy was created."
         }
       ]

@@ -25,6 +25,7 @@ module.exports = {
           type: 'math-input',
           question: "Calculate $\\vec{A} \\cdot \\vec{B}$ where $\\vec{A} = 6\\hat{i} + 4\\hat{j}$ and $\\vec{B} = 3\\hat{i} - 2\\hat{j}$.",
           mathAnswer: "10",
+          answerRange: 0.1,
           explanation: "When computing the dot product with unit vectors, multiply the corresponding components and add them:\n\n$$\\vec{A} \\cdot \\vec{B} = (6)(3) + (4)(-2)$$\n\n$$\\vec{A} \\cdot \\vec{B} = 18 - 8 = 10$$\n\nNote that $\\hat{i} \\cdot \\hat{i} = 1$, $\\hat{j} \\cdot \\hat{j} = 1$, and $\\hat{i} \\cdot \\hat{j} = 0$ because perpendicular unit vectors have a dot product of zero."
         }
       ]

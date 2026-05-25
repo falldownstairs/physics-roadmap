@@ -88,6 +88,7 @@ module.exports = {
             alt: 'Wheel with forces applied at different radii'
           },
           mathAnswer: "4",
+          answerRange: 0.1,
           explanation: "When strings or forces act tangentially on a wheel, they are always perpendicular to the radius, making torque calculations simple:\n\n$$\\tau = rF$$\n\nFor the outer radius:\n\n$$\\tau_1 = r_1 F_1 = (0.3\\text{ m})(10\\text{ N}) = 3\\text{ N}\\cdot\\text{m}$$\n\nFor the inner radius (same direction):\n\n$$\\tau_2 = r_2 F_2 = (0.1\\text{ m})(10\\text{ N}) = 1\\text{ N}\\cdot\\text{m}$$\n\nSince both forces rotate the wheel in the same direction, the torques add:\n\n$$\\tau_{\\text{net}} = \\tau_1 + \\tau_2 = 3 + 1 = 4\\text{ N}\\cdot\\text{m}$$\n\nIf the forces caused rotation in opposite directions, we would subtract the torques."
         }
       ]

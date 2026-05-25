@@ -25,6 +25,7 @@ module.exports = {
           type: 'math-input',
           question: "A machine performs $450\\text{ J}$ of work in $15\\text{ s}$. Calculate the average power output (in $\\text{W}$).",
           mathAnswer: "30",
+          answerRange: 0.5,
           explanation: "Average power is the work done divided by the time interval:\n\n$$P_{\\text{avg}} = \\frac{W}{\\Delta t}$$\n\nSubstituting the given values:\n\n$$P_{\\text{avg}} = \\frac{450\\text{ J}}{15\\text{ s}} = 30\\text{ W}$$\n\nThis means the machine transfers energy at a rate of $30$ joules per second."
         },
         {

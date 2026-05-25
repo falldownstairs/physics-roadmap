@@ -25,6 +25,7 @@ module.exports = {
           type: 'math-input',
           question: "Two objects collide. Object A has mass $3\\text{ kg}$ and initial velocity $4\\text{ m/s}$ to the right. Object B has mass $2\\text{ kg}$ and initial velocity $1\\text{ m/s}$ to the left. After collision, object A moves at $1\\text{ m/s}$ to the right. Find the final velocity of object B (in $\\text{m/s}$). Use positive for rightward motion.",
           mathAnswer: "3.5",
+          answerRange: 0.1,
           explanation: "Using conservation of momentum with rightward as positive:\n\n$$p_{\\text{initial}} = p_{\\text{final}}$$\n\n$$m_A v_{Ai} + m_B v_{Bi} = m_A v_{Af} + m_B v_{Bf}$$\n\nSubstituting values (note: $v_{Bi} = -1\\text{ m/s}$ since leftward):\n\n$$(3)(4) + (2)(-1) = (3)(1) + (2)v_{Bf}$$\n\n$$12 - 2 = 3 + 2v_{Bf}$$\n\n$$10 = 3 + 2v_{Bf}$$\n\n$$v_{Bf} = 3.5\\text{ m/s}$$\n\nThe positive result indicates object B moves to the right after collision."
         },
         {
@@ -65,6 +66,7 @@ module.exports = {
           type: 'math-input',
           question: "A $5\\text{ kg}$ mass moving at $2\\text{ m/s}$ collides and sticks to a $4\\text{ kg}$ mass moving at $-1\\text{ m/s}$. Calculate the kinetic energy lost (in $\\text{J}$) during this perfectly inelastic collision.",
           mathAnswer: "10",
+          answerRange: 0.1,
           explanation: "First, find the final velocity using momentum conservation:\n\n$$m_1 v_1 + m_2 v_2 = (m_1 + m_2)v_f$$\n\n$$(5)(2) + (4)(-1) = (9)v_f$$\n\n$$v_f = \\frac{6}{9} = \\frac{2}{3}\\text{ m/s}$$\n\nInitial kinetic energy:\n\n$$K_i = \\frac{1}{2}(5)(2)^2 + \\frac{1}{2}(4)(1)^2 = 10 + 2 = 12\\text{ J}$$\n\nFinal kinetic energy:\n\n$$K_f = \\frac{1}{2}(9)\\left(\\frac{2}{3}\\right)^2 = \\frac{1}{2}(9)\\left(\\frac{4}{9}\\right) = 2\\text{ J}$$\n\nEnergy lost:\n\n$$\\Delta K = K_i - K_f = 12 - 2 = 10\\text{ J}$$\n\nThis energy is converted to thermal energy and deformation."
         }
       ]
@@ -101,6 +103,7 @@ module.exports = {
           type: 'math-input',
           question: "Two identical balls collide elastically. Ball 1 has initial velocity $6\\text{ m/s}$ and ball 2 is at rest. After collision, ball 1 stops. What is the velocity of ball 2 after collision (in $\\text{m/s}$)?",
           mathAnswer: "6",
+          answerRange: 0.1,
           explanation: "For an elastic collision between equal masses where one is at rest, the velocities are exchanged.\n\nUsing momentum conservation:\n\n$$m_1 v_{1i} + m_2 v_{2i} = m_1 v_{1f} + m_2 v_{2f}$$\n\nSince $m_1 = m_2 = m$, $v_{2i} = 0$, and $v_{1f} = 0$:\n\n$$m(6) + m(0) = m(0) + m v_{2f}$$\n\n$$v_{2f} = 6\\text{ m/s}$$\n\nWe can verify this is elastic by checking kinetic energy:\n\n$$K_i = \\frac{1}{2}m(6)^2 = 18m$$\n\n$$K_f = \\frac{1}{2}m(6)^2 = 18m$$\n\nIndeed, $K_i = K_f$, confirming the collision is elastic."
         }
       ]

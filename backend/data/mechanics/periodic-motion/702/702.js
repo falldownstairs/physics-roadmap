@@ -68,7 +68,7 @@ module.exports = {
         {
           type: 'math-input',
           question: "A $0.8\\text{ kg}$ mass on a spring with $k = 50\\text{ N/m}$ oscillates with amplitude $0.2\\text{ m}$. Find the speed (in $\\text{m/s}$) when the displacement is $0.1\\text{ m}$.",
-          mathAnswer: "1.73",
+          mathAnswer: "1.37",
           answerRange: 0.1,
           explanation: "Using energy conservation:\n\n$$\\frac{1}{2}kA^2 = \\frac{1}{2}kx^2 + \\frac{1}{2}mv^2$$\n\nSolving for velocity:\n\n$$v = \\sqrt{\\frac{k}{m}(A^2 - x^2)}$$\n\nSubstituting values:\n\n$$v = \\sqrt{\\frac{50}{0.8}((0.2)^2 - (0.1)^2)}$$\n\n$$v = \\sqrt{62.5 \\times 0.03} = \\sqrt{1.875} \\approx 1.37\\text{ m/s}$$"
         }

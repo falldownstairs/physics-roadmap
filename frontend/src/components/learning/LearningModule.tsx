@@ -173,11 +173,11 @@ export default function LearningModule({ lesson }: LearningModuleProps) {
           <div className={`transition-all duration-300 ${
             isScrolled ? 'mb-3' : 'mb-4'
           }`}>
-            <h1 className={`font-bold text-slate-800 transition-all duration-300 ${
+            <h2 className={`font-bold text-slate-800 transition-all duration-300 ${
               isScrolled ? 'text-xl mb-1' : 'text-3xl mb-2'
             }`}>
               {lesson.title}
-            </h1>
+            </h2>
             {!isScrolled && (
               <p className="text-slate-600 text-sm">
                 Estimated time: {lesson.estimatedTime}

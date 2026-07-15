@@ -1,8 +1,31 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import JsonLd from "@/components/seo/JsonLd";
+import { absoluteUrl, publisherJsonLd } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "About PhysicsRoadmap",
+  description:
+    "Learn how to use PhysicsRoadmap, a free AP Physics C self-study roadmap with lessons, practice questions, credits, and contact information.",
+  alternates: {
+    canonical: "/about",
+  },
+};
+
+const aboutJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About PhysicsRoadmap',
+  description:
+    'Usage guidance, credits, support information, and contact details for the free AP Physics C self-study platform PhysicsRoadmap.',
+  url: absoluteUrl('/about'),
+  publisher: publisherJsonLd,
+};
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-200 relative">
+      <JsonLd data={aboutJsonLd} />
       <div className="max-w-5xl mx-auto px-6 py-16 space-y-10">
         <section className="text-center space-y-4">
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900">

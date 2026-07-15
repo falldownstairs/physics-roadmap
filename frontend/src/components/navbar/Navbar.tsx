@@ -21,8 +21,6 @@ export default function Navbar() {
     { href: "/about", label: "About", icon: "/icons/about.png" },
   ];
 
-  const isCalendActive = pathname === "/calend";
-
   return (
     <>
       <nav className="relative top-0 left-0 right-0 z-30 bg-white border-b border-slate-200">
@@ -55,23 +53,6 @@ export default function Navbar() {
               );
             })}
 
-            <Link
-              href="/calend"
-              aria-label="Calend"
-              className={`inline-flex items-center justify-center px-3 py-1 rounded-full transition-all duration-200 whitespace-nowrap min-w-[2.5rem] ${isCalendActive
-                ? "text-black bg-slate-200"
-                : "text-slate-600 hover:text-black hover:bg-slate-100"
-                }`}
-            >
-              <Image
-                src="/icons/calend.png"
-                alt="Calend"
-                width={22}
-                height={22}
-                className={`block sm:hidden ${isCalendActive ? "brightness-0" : "brightness-0 opacity-60"}`}
-              />
-              <span className="hidden sm:inline font-bold">Calend</span>
-            </Link>
           </div>
 
           {isAuthenticated ? (

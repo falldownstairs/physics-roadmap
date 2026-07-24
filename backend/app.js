@@ -19,13 +19,25 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 // CORS configuration
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://www.physicsroadmap.com', 'https://physicsroadmap.com']
-  : ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'];
+const normalizeOrigin = (origin) => {
+  if (!origin) return null;
+  try {
+    return new URL(origin).origin;
+  } catch {
+    return origin.replace(/\/$/, '');
+  }
+};
+
+const allowedOrigins = [
+  ...(process.env.NODE_ENV === 'production'
+    ? ['https://www.physicsroadmap.com', 'https://physicsroadmap.com']
+    : ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000']),
+  process.env.FRONTEND_URL,
+].map(normalizeOrigin).filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) callback(null, true);
     else callback(new Error('Not allowed by CORS'));
   },
   credentials: true,

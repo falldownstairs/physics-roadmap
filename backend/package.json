@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "postinstall": "prisma generate",
     "migrate:mongo-to-postgres": "tsx scripts/migrate-mongo-to-postgres.ts",
     "clear-lessons": "node scripts/clear-lessons.js",
     "cleanup": "chmod +x scripts/cleanup.sh && ./scripts/cleanup.sh",

@@ -53,3 +53,6 @@ Thumbs.db
 *.swo
 .vercel
 .env*.local
+backups/
+
+/src/generated/prisma

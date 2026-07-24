@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                      String     @id @default(cuid())
+  mongoId                 String?    @unique
+  googleId                String?    @unique
+  email                   String     @unique
+  displayName             String?
+  firstName               String?
+  lastName                String?
+  profilePicture          String?
+  profilePictureUpdatedAt DateTime   @default(now())
+  createdAt               DateTime   @default(now())
+
+  progress                Progress[]
+
+  @@map("users")
+}
+
+model Progress {
+  id            String       @id @default(cuid())
+  userId        String
+  lessonId      String
+  courseId      String       @default("mechanics")
+  videoIndex    Int          @default(0)
+  questionIndex Int          @default(0)
+  lastUpdated   DateTime     @default(now())
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAnswers   UserAnswer[]
+
+  @@unique([userId, courseId, lessonId])
+  @@index([userId])
+  @@index([courseId, lessonId])
+  @@map("progress")
+}
+
+model UserAnswer {
+  id            String   @id @default(cuid())
+  progressId    String
+  position      Int      @default(0)
+  videoIndex    Int?
+  questionIndex Int?
+  answer        Json?
+  isCorrect     Boolean?
+
+  progress      Progress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+
+  @@index([progressId])
+  @@index([progressId, position])
+  @@map("user_answers")
+}
+
+model Session {
+  sid    String   @id @db.VarChar
+  sess   Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_sessions_expire")
+  @@map("sessions")
+}

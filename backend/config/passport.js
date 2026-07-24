@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/user');
+const prisma = require('../lib/prisma');
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -8,7 +8,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id);
+    const user = await prisma.user.findUnique({ where: { id } });
     if (!user) return done(null, false);
     done(null, user);
   } catch (err) {
@@ -26,38 +26,41 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ googleId: profile.id });
-        
+        const email = profile.emails?.[0]?.value;
+        if (!email) return done(new Error('Google profile did not include an email address'), null);
+
         const profileData = {
-          email: profile.emails[0].value,
+          email,
           displayName: profile.displayName,
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyName,
-          profilePicture: profile.photos[0].value,
+          firstName: profile.name?.givenName,
+          lastName: profile.name?.familyName,
+          profilePicture: profile.photos?.[0]?.value,
           profilePictureUpdatedAt: new Date()
         };
-        
-        if (user) {
-          Object.assign(user, profileData);
-          
-          if (user.progress && user.progress.length > 0) {
-            user.progress.forEach(p => {
-              if (!p.courseId) {
-                p.courseId = 'mechanics';
-              }
-            });
-          }
-          
-          await user.save();
+
+        const existingUser =
+          (await prisma.user.findUnique({ where: { googleId: profile.id } })) ??
+          (await prisma.user.findUnique({ where: { email } }));
+
+        if (existingUser) {
+          const user = await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              ...profileData,
+              googleId: existingUser.googleId || profile.id,
+            },
+          });
+
           return done(null, user);
         }
-        
-        user = new User({
-          googleId: profile.id,
-          ...profileData
+
+        const user = await prisma.user.create({
+          data: {
+            googleId: profile.id,
+            ...profileData,
+          },
         });
-        
-        await user.save();
+
         done(null, user);
       } catch (err) {
         done(err, null);

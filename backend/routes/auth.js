@@ -63,7 +63,7 @@ router.get('/user', (req, res) => {
     res.json({
       isAuthenticated: true,
       user: {
-        id: req.user._id,
+        id: req.user.id,
         email: req.user.email,
         displayName: req.user.displayName,
         firstName: req.user.firstName,

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
+const { Prisma } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const dataService = require('../services/dataService');
 
 const isAuthenticated = (req, res, next) => {
@@ -13,14 +14,47 @@ const countProblems = (lesson) => {
   return lesson.videos.reduce((sum, v) => sum + (v.questions?.length || 0), 0);
 };
 
+const answerToJson = (answer) => answer == null ? Prisma.JsonNull : answer;
+
+const formatUserAnswer = (answer) => ({
+  videoIndex: answer.videoIndex,
+  questionIndex: answer.questionIndex,
+  answer: answer.answer,
+  isCorrect: answer.isCorrect,
+});
+
+const formatProgress = (progress) => ({
+  lessonId: progress.lessonId,
+  courseId: progress.courseId,
+  videoIndex: progress.videoIndex,
+  questionIndex: progress.questionIndex,
+  userAnswers: (progress.userAnswers || []).map(formatUserAnswer),
+  lastUpdated: progress.lastUpdated,
+});
+
 // Get all progress for a course
 router.get('/course/:courseName', isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    
-    const courseProgress = user.progress.filter(p => p.courseId === req.params.courseName);
-    res.json({ progress: courseProgress });
+    const courseProgress = await prisma.progress.findMany({
+      where: {
+        userId: req.user.id,
+        courseId: req.params.courseName,
+      },
+      include: {
+        userAnswers: {
+          orderBy: [
+            { position: 'asc' },
+            { id: 'asc' },
+          ],
+        },
+      },
+      orderBy: [
+        { lastUpdated: 'desc' },
+        { lessonId: 'asc' },
+      ],
+    });
+
+    res.json({ progress: courseProgress.map(formatProgress) });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -45,17 +79,26 @@ router.get('/course/:courseName/problems', async (req, res) => {
 router.get('/course/:courseName/completion', isAuthenticated, async (req, res) => {
   try {
     const { courseName } = req.params;
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    
     const lessons = dataService.getLessonsForCourse(courseName);
+    const progressRows = await prisma.progress.findMany({
+      where: {
+        userId: req.user.id,
+        courseId: courseName,
+      },
+      include: {
+        _count: {
+          select: { userAnswers: true },
+        },
+      },
+    });
+    const progressByLesson = new Map(progressRows.map(progress => [progress.lessonId, progress]));
     
     const lessonCompletions = {};
     lessons.forEach(lesson => {
       const lessonId = lesson.id.toString();
       const total = countProblems(lesson);
-      const progress = user.progress.find(p => p.lessonId === lessonId && p.courseId === courseName);
-      const answered = progress?.userAnswers?.length || 0;
+      const progress = progressByLesson.get(lessonId);
+      const answered = progress?._count.userAnswers || 0;
       lessonCompletions[lessonId] = { completed: answered === total && total > 0, total, answered };
     });
     
@@ -69,16 +112,30 @@ router.get('/course/:courseName/completion', isAuthenticated, async (req, res) =
 router.get('/:courseId/:lessonId', isAuthenticated, async (req, res) => {
   try {
     const { courseId, lessonId } = req.params;
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const progress = await prisma.progress.findUnique({
+      where: {
+        userId_courseId_lessonId: {
+          userId: req.user.id,
+          courseId,
+          lessonId,
+        },
+      },
+      include: {
+        userAnswers: {
+          orderBy: [
+            { position: 'asc' },
+            { id: 'asc' },
+          ],
+        },
+      },
+    });
 
-    const progress = user.progress.find(p => p.lessonId === lessonId && p.courseId === courseId);
     if (!progress) return res.status(404).json({ message: 'No progress found' });
 
     res.json({
       videoIndex: progress.videoIndex,
       questionIndex: progress.questionIndex,
-      userAnswers: progress.userAnswers
+      userAnswers: progress.userAnswers.map(formatUserAnswer)
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -90,17 +147,62 @@ router.post('/:courseId/:lessonId', isAuthenticated, async (req, res) => {
   try {
     const { courseId, lessonId } = req.params;
     const { videoIndex, questionIndex, userAnswers } = req.body;
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const answers = Array.isArray(userAnswers) ? userAnswers : [];
+    const lastUpdated = new Date();
 
-    const idx = user.progress.findIndex(p => p.lessonId === lessonId && p.courseId === courseId);
-    const newProgress = { lessonId, courseId, videoIndex, questionIndex, userAnswers, lastUpdated: new Date() };
+    const progress = await prisma.$transaction(async (tx) => {
+      const savedProgress = await tx.progress.upsert({
+        where: {
+          userId_courseId_lessonId: {
+            userId: req.user.id,
+            courseId,
+            lessonId,
+          },
+        },
+        create: {
+          userId: req.user.id,
+          lessonId,
+          courseId,
+          videoIndex: typeof videoIndex === 'number' ? videoIndex : 0,
+          questionIndex: typeof questionIndex === 'number' ? questionIndex : 0,
+          lastUpdated,
+        },
+        update: {
+          videoIndex: typeof videoIndex === 'number' ? videoIndex : 0,
+          questionIndex: typeof questionIndex === 'number' ? questionIndex : 0,
+          lastUpdated,
+        },
+      });
 
-    if (idx !== -1) user.progress[idx] = newProgress;
-    else user.progress.push(newProgress);
+      await tx.userAnswer.deleteMany({ where: { progressId: savedProgress.id } });
 
-    await user.save();
-    res.json({ message: 'Progress saved', progress: newProgress });
+      if (answers.length > 0) {
+        await tx.userAnswer.createMany({
+          data: answers.map((answer, position) => ({
+            progressId: savedProgress.id,
+            position,
+            videoIndex: typeof answer.videoIndex === 'number' ? answer.videoIndex : null,
+            questionIndex: typeof answer.questionIndex === 'number' ? answer.questionIndex : null,
+            answer: answerToJson(answer.answer),
+            isCorrect: typeof answer.isCorrect === 'boolean' ? answer.isCorrect : null,
+          })),
+        });
+      }
+
+      return tx.progress.findUnique({
+        where: { id: savedProgress.id },
+        include: {
+          userAnswers: {
+            orderBy: [
+              { position: 'asc' },
+              { id: 'asc' },
+            ],
+          },
+        },
+      });
+    });
+
+    res.json({ message: 'Progress saved', progress: formatProgress(progress) });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

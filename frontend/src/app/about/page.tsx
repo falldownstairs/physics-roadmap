@@ -1,31 +1,8 @@
 import Link from "next/link";
-import type { Metadata } from "next";
-import JsonLd from "@/components/seo/JsonLd";
-import { absoluteUrl, publisherJsonLd } from "@/lib/seo";
-
-export const metadata: Metadata = {
-  title: "About PhysicsRoadmap",
-  description:
-    "Learn how to use PhysicsRoadmap, a free AP Physics C self-study roadmap with lessons, practice questions, credits, and contact information.",
-  alternates: {
-    canonical: "/about",
-  },
-};
-
-const aboutJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'AboutPage',
-  name: 'About PhysicsRoadmap',
-  description:
-    'Usage guidance, credits, support information, and contact details for the free AP Physics C self-study platform PhysicsRoadmap.',
-  url: absoluteUrl('/about'),
-  publisher: publisherJsonLd,
-};
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-200 relative">
-      <JsonLd data={aboutJsonLd} />
       <div className="max-w-5xl mx-auto px-6 py-16 space-y-10">
         <section className="text-center space-y-4">
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900">
@@ -95,26 +72,6 @@ export default function AboutPage() {
               </Link>.
             </p>
           </div>
-        </section>
-
-        <section className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-md p-8 space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">☕</span>
-            <h3 className="text-xl font-semibold text-slate-900">Support This Project</h3>
-          </div>
-          <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-            Donations are highly appreciated but not necessary at all! This resource will always remain free. 
-            If you&apos;ve found it helpful and want to support its continued development, consider buying me a coffee.
-          </p>
-          <Link
-            href="https://buymeacoffee.com/physicsroadmap"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm"
-          >
-            <span>☕</span>
-            Buy Me a Coffee
-          </Link>
         </section>
 
         <section className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl shadow-md p-8 space-y-4">

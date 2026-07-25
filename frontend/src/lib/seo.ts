@@ -7,7 +7,7 @@ export const publisherJsonLd = {
   '@type': 'Organization',
   name: SITE_NAME,
   url: BASE_URL,
-  logo: `${BASE_URL}/icons/app-logo.png`,
+  logo: `${BASE_URL}/favicon.ico`,
   email: 'physicsroadmap1@gmail.com',
 };
 

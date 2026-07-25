@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.ico',
-    apple: '/icons/app-logo.png',
+    apple: '/favicon.ico',
   },
   openGraph: {
     type: 'website',
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     url: 'https://physicsroadmap.com',
     images: [
       {
-        url: '/icons/app-logo.png',
-        alt: 'PhysicsRoadmap app logo',
+        url: '/favicon.ico',
+        alt: 'PhysicsRoadmap favicon',
       },
     ],
   },

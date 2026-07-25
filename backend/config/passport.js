@@ -2,6 +2,11 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const prisma = require('../lib/prisma');
 
+const frontendUrl = process.env.FRONTEND_URL?.replace(/\/$/, '');
+const callbackURL = frontendUrl
+  ? `${frontendUrl}/api/auth/google/callback`
+  : '/api/auth/google/callback';
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -21,7 +26,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/api/auth/google/callback',
+      callbackURL,
       proxy: true
     },
     async (accessToken, refreshToken, profile, done) => {

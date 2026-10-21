@@ -9,7 +9,6 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "postinstall": "prisma generate",
-    "migrate:mongo-to-postgres": "tsx scripts/migrate-mongo-to-postgres.ts",
     "clear-lessons": "node scripts/clear-lessons.js",
     "cleanup": "chmod +x scripts/cleanup.sh && ./scripts/cleanup.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,14 +26,12 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
-    "mongoose": "^8.18.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.22.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
-    "prisma": "^7.9.0",
-    "tsx": "^4.23.1"
+    "prisma": "^7.9.0"
   }
 }
